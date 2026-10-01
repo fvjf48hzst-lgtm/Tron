@@ -3,52 +3,117 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <title>Neon Cycles</title>
 
 <style>
+
 * {
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
+html,
+body {
     margin: 0;
     padding: 0;
+
     width: 100%;
     height: 100%;
+
     overflow: hidden;
+
     background:
-        radial-gradient(circle at center, #001b35 0%, #000814 55%, #000000 100%);
-    font-family: Arial, Helvetica, sans-serif;
+        radial-gradient(
+            circle at center,
+            #001b35 0%,
+            #000814 55%,
+            #000000 100%
+        );
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
     color: white;
+
     touch-action: none;
     user-select: none;
-    transition: background 0.5s ease;
-}
 
-body.redMode {
-    background:
-        radial-gradient(circle at center, #350000 0%, #140000 55%, #000000 100%);
-}
+    transition:
+        background 0.5s ease;
 
-#gameWrapper {
-    position: relative;
-    width: min(94vw, 700px);
-    aspect-ratio: 1 / 1;
+    /* CENTER THE GAME ON THE SCREEN */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
+body.redMode {
+    background:
+        radial-gradient(
+            circle at center,
+            #350000 0%,
+            #140000 55%,
+            #000000 100%
+        );
+}
+
+
+/* =========================================================
+   GAME WRAPPER
+   ========================================================= */
+
+#gameWrapper {
+
+    position: relative;
+
+    width: min(94vw, 700px);
+
+    aspect-ratio: 1 / 1;
+
+    /*
+        Prevent the arena from being too tall
+        for smaller phone screens.
+    */
+
+    max-width: 94vw;
+    max-height: 94vh;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* =========================================================
+   CANVAS
+   ========================================================= */
+
 canvas {
+
     width: 100%;
     height: 100%;
+
     display: block;
 
     background:
-        linear-gradient(rgba(0, 100, 255, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 100, 255, 0.04) 1px, transparent 1px),
-        radial-gradient(circle, #001a30 0%, #000814 70%);
+        linear-gradient(
+            rgba(0, 100, 255, 0.04) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(0, 100, 255, 0.04) 1px,
+            transparent 1px
+        ),
+        radial-gradient(
+            circle,
+            #001a30 0%,
+            #000814 70%
+        );
 
     border: 2px solid #008cff;
 
@@ -63,10 +128,22 @@ canvas {
 }
 
 canvas.redMode {
+
     background:
-        linear-gradient(rgba(255, 40, 0, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 40, 0, 0.04) 1px, transparent 1px),
-        radial-gradient(circle, #300000 0%, #080000 70%);
+        linear-gradient(
+            rgba(255, 40, 0, 0.04) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255, 40, 0, 0.04) 1px,
+            transparent 1px
+        ),
+        radial-gradient(
+            circle,
+            #300000 0%,
+            #080000 70%
+        );
 
     border-color: #ff2222;
 
@@ -75,10 +152,18 @@ canvas.redMode {
         inset 0 0 30px rgba(255, 0, 0, 0.25);
 }
 
+
+/* =========================================================
+   PAUSE BUTTON
+   ========================================================= */
+
 #pauseButton {
+
     position: absolute;
+
     top: 10px;
     left: 10px;
+
     z-index: 20;
 
     width: 42px;
@@ -87,13 +172,16 @@ canvas.redMode {
     border: 2px solid #00aaff;
     border-radius: 8px;
 
-    background: rgba(0, 10, 25, 0.85);
+    background:
+        rgba(0, 10, 25, 0.85);
+
     color: #00c8ff;
 
     font-size: 23px;
     font-weight: bold;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
@@ -104,29 +192,45 @@ canvas.redMode {
     touch-action: manipulation;
 }
 
+
+/* =========================================================
+   PAUSE MENU
+   ========================================================= */
+
 #pauseMenu {
+
     position: absolute;
+
     inset: 0;
+
     z-index: 30;
 
     display: none;
+
     justify-content: center;
     align-items: center;
 
-    background: rgba(0, 5, 15, 0.72);
-    backdrop-filter: blur(4px);
+    background:
+        rgba(0, 5, 15, 0.72);
+
+    backdrop-filter:
+        blur(4px);
 
     touch-action: manipulation;
 }
 
+
 #pauseBox {
+
     width: min(75%, 300px);
+
     padding: 28px;
 
     border: 2px solid #00aaff;
     border-radius: 14px;
 
-    background: rgba(0, 12, 30, 0.95);
+    background:
+        rgba(0, 12, 30, 0.95);
 
     box-shadow:
         0 0 25px #008cff,
@@ -135,8 +239,11 @@ canvas.redMode {
     text-align: center;
 }
 
+
 #pauseBox h2 {
-    margin: 0 0 22px;
+
+    margin:
+        0 0 22px;
 
     color: #00c8ff;
 
@@ -146,15 +253,21 @@ canvas.redMode {
     letter-spacing: 3px;
 }
 
+
 .menuButton {
+
     width: 100%;
+
     margin: 8px 0;
+
     padding: 13px;
 
     border: 2px solid #008cff;
     border-radius: 8px;
 
-    background: #001329;
+    background:
+        #001329;
+
     color: #00c8ff;
 
     font-size: 16px;
@@ -166,8 +279,15 @@ canvas.redMode {
     touch-action: manipulation;
 }
 
+
+/* =========================================================
+   HUD
+   ========================================================= */
+
 #hud {
+
     position: absolute;
+
     top: 8px;
     left: 0;
     right: 0;
@@ -175,16 +295,21 @@ canvas.redMode {
     z-index: 10;
 
     pointer-events: none;
+
     text-align: center;
 }
 
+
 #stopwatch {
+
     display: inline-block;
 
     padding: 5px 12px;
+
     border-radius: 8px;
 
-    background: rgba(0, 5, 15, 0.72);
+    background:
+        rgba(0, 5, 15, 0.72);
 
     color: #ffffff;
 
@@ -197,7 +322,13 @@ canvas.redMode {
         0 0 8px #ffffff;
 }
 
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
 #laserStatus {
+
     position: absolute;
 
     left: 12px;
@@ -212,7 +343,9 @@ canvas.redMode {
         0 0 8px #00aaff;
 }
 
+
 #enemyStatus {
+
     position: absolute;
 
     right: 12px;
@@ -227,26 +360,39 @@ canvas.redMode {
         0 0 8px #ff0000;
 }
 
+
+/* =========================================================
+   GAME MESSAGE
+   ========================================================= */
+
 #gameMessage {
+
     position: absolute;
+
     inset: 0;
 
     z-index: 15;
 
     display: none;
+
     justify-content: center;
     align-items: center;
 
     pointer-events: none;
 }
 
+
 #messageText {
-    padding: 18px 25px;
+
+    padding:
+        18px 25px;
 
     border: 2px solid #00c8ff;
+
     border-radius: 12px;
 
-    background: rgba(0, 5, 15, 0.9);
+    background:
+        rgba(0, 5, 15, 0.9);
 
     color: #ffffff;
 
@@ -261,8 +407,10 @@ canvas.redMode {
     box-shadow:
         0 0 20px #008cff;
 }
+
 </style>
 </head>
+
 
 <body>
 
@@ -271,70 +419,123 @@ canvas.redMode {
     <canvas id="gameCanvas"></canvas>
 
     <div id="hud">
-        <div id="stopwatch">00:00.00</div>
+
+        <div id="stopwatch">
+            00:00.00
+        </div>
+
     </div>
 
-    <div id="pauseButton">Ⅱ</div>
 
-    <div id="laserStatus">LASER OFF</div>
-    <div id="enemyStatus">RED TRAIL ON</div>
+    <div id="pauseButton">
+        Ⅱ
+    </div>
+
+
+    <div id="laserStatus">
+        LASER OFF
+    </div>
+
+
+    <div id="enemyStatus">
+        RED TRAIL ON
+    </div>
+
 
     <div id="pauseMenu">
+
         <div id="pauseBox">
 
-            <h2>PAUSED</h2>
+            <h2>
+                PAUSED
+            </h2>
 
-            <button class="menuButton" id="resumeButton">
+            <button
+                class="menuButton"
+                id="resumeButton"
+            >
                 RESUME
             </button>
 
-            <button class="menuButton" id="restartButton">
+            <button
+                class="menuButton"
+                id="restartButton"
+            >
                 RESTART
             </button>
 
         </div>
+
     </div>
 
+
     <div id="gameMessage">
+
         <div id="messageText"></div>
+
     </div>
 
 </div>
 
+
 <script>
 
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
+
 const canvas =
-    document.getElementById("gameCanvas");
+    document.getElementById(
+        "gameCanvas"
+    );
 
 const ctx =
     canvas.getContext("2d");
 
 const pauseButton =
-    document.getElementById("pauseButton");
+    document.getElementById(
+        "pauseButton"
+    );
 
 const pauseMenu =
-    document.getElementById("pauseMenu");
+    document.getElementById(
+        "pauseMenu"
+    );
 
 const resumeButton =
-    document.getElementById("resumeButton");
+    document.getElementById(
+        "resumeButton"
+    );
 
 const restartButton =
-    document.getElementById("restartButton");
+    document.getElementById(
+        "restartButton"
+    );
 
 const stopwatch =
-    document.getElementById("stopwatch");
+    document.getElementById(
+        "stopwatch"
+    );
 
 const laserStatus =
-    document.getElementById("laserStatus");
+    document.getElementById(
+        "laserStatus"
+    );
 
 const enemyStatus =
-    document.getElementById("enemyStatus");
+    document.getElementById(
+        "enemyStatus"
+    );
 
 const gameMessage =
-    document.getElementById("gameMessage");
+    document.getElementById(
+        "gameMessage"
+    );
 
 const messageText =
-    document.getElementById("messageText");
+    document.getElementById(
+        "messageText"
+    );
 
 
 /* =========================================================
@@ -348,9 +549,11 @@ const SWIPE_DISTANCE = 25;
 const TRIPLE_TAP_TIME = 500;
 
 const ENEMY_TRAIL_MIN_TIME = 0.7;
+
 const ENEMY_TRAIL_MAX_TIME = 2.8;
 
 const ENEMY_LOOK_AHEAD = 5.0;
+
 const ENEMY_SIDE_CHECK = 1.1;
 
 
@@ -359,18 +562,23 @@ const ENEMY_SIDE_CHECK = 1.1;
    ========================================================= */
 
 let canvasSize = 0;
+
 let cellSize = 0;
 
 let gameRunning = true;
+
 let gameOver = false;
 
 let survivalTime = 0;
 
 let laserActive = false;
+
 let playerTrail = [];
 
 let enemyTrailActive = true;
+
 let enemyTrail = [];
+
 let enemyTrailTimer = 0;
 
 
@@ -381,9 +589,11 @@ let enemyTrailTimer = 0;
 let pointerDown = false;
 
 let pointerStartX = 0;
+
 let pointerStartY = 0;
 
 let tapCount = 0;
+
 let tapTimer = null;
 
 
@@ -394,6 +604,7 @@ let tapTimer = null;
 const player = {
 
     x: 3,
+
     y: 12,
 
     dir: {
@@ -404,9 +615,11 @@ const player = {
     speed: 7.5
 };
 
+
 const enemy = {
 
     x: 21,
+
     y: 12,
 
     dir: {
@@ -456,6 +669,7 @@ function resizeCanvas() {
         GRID_SIZE;
 }
 
+
 window.addEventListener(
     "resize",
     resizeCanvas
@@ -468,12 +682,16 @@ resizeCanvas();
    RESET
    ========================================================= */
 
-function randomRange(min, max) {
+function randomRange(
+    min,
+    max
+) {
 
     return Math.random() *
         (max - min) +
         min;
 }
+
 
 function setEnemyTrailTimer() {
 
@@ -484,9 +702,11 @@ function setEnemyTrailTimer() {
         );
 }
 
+
 function resetGame() {
 
     player.x = 3;
+
     player.y = 12;
 
     player.dir = {
@@ -496,6 +716,7 @@ function resetGame() {
 
 
     enemy.x = 21;
+
     enemy.y = 12;
 
     enemy.dir = {
@@ -518,12 +739,14 @@ function resetGame() {
         }
     ];
 
+
     setEnemyTrailTimer();
 
 
     survivalTime = 0;
 
     gameRunning = true;
+
     gameOver = false;
 
 
@@ -535,6 +758,7 @@ function resetGame() {
 
 
     tapCount = 0;
+
 
     if (tapTimer) {
 
@@ -549,6 +773,7 @@ function resetGame() {
     updateBackgroundMode();
 
     updateHUD();
+
 
     lastTime =
         performance.now();
@@ -566,10 +791,12 @@ function updateHUD() {
             survivalTime * 100
         );
 
+
     const minutes =
         Math.floor(
             totalHundredths / 6000
         );
+
 
     const seconds =
         Math.floor(
@@ -577,34 +804,42 @@ function updateHUD() {
             100
         );
 
+
     const hundredths =
         totalHundredths % 100;
 
 
     stopwatch.textContent =
+
         String(minutes).padStart(
             2,
             "0"
-        ) +
-        ":" +
-        String(seconds).padStart(
+        )
+
+        + ":"
+
+        + String(seconds).padStart(
             2,
             "0"
-        ) +
-        "." +
-        String(hundredths).padStart(
+        )
+
+        + "."
+
+        + String(hundredths).padStart(
             2,
             "0"
         );
 
 
     laserStatus.textContent =
+
         laserActive
             ? "LASER ACTIVE"
             : "LASER OFF";
 
 
     enemyStatus.textContent =
+
         enemyTrailActive
             ? "RED TRAIL ON"
             : "RED TRAIL OFF";
@@ -621,10 +856,12 @@ function updateBackgroundMode() {
         survivalTime >= 30 &&
         survivalTime < 60;
 
+
     document.body.classList.toggle(
         "redMode",
         redMode
     );
+
 
     canvas.classList.toggle(
         "redMode",
@@ -637,21 +874,28 @@ function updateBackgroundMode() {
    PLAYER MOVEMENT
    ========================================================= */
 
-function changeDirection(dx, dy) {
+function changeDirection(
+    dx,
+    dy
+) {
 
     if (
         !gameRunning ||
         gameOver
     ) {
+
         return;
     }
+
 
     if (
         dx === -player.dir.x &&
         dy === -player.dir.y
     ) {
+
         return;
     }
+
 
     player.dir = {
         x: dx,
@@ -659,12 +903,17 @@ function changeDirection(dx, dy) {
     };
 }
 
-function moveCycle(cycle, dt) {
+
+function moveCycle(
+    cycle,
+    dt
+) {
 
     cycle.x +=
         cycle.dir.x *
         cycle.speed *
         dt;
+
 
     cycle.y +=
         cycle.dir.y *
@@ -680,13 +929,16 @@ function moveCycle(cycle, dt) {
 function updatePlayerTrail() {
 
     if (!laserActive) {
+
         return;
     }
+
 
     const last =
         playerTrail[
             playerTrail.length - 1
         ];
+
 
     if (
         !last ||
@@ -697,16 +949,22 @@ function updatePlayerTrail() {
     ) {
 
         playerTrail.push({
+
             x: player.x,
+
             y: player.y
+
         });
     }
 }
 
 
-function updateEnemyTrail(dt) {
+function updateEnemyTrail(
+    dt
+) {
 
     enemyTrailTimer -= dt;
+
 
     if (
         enemyTrailTimer <= 0
@@ -742,6 +1000,7 @@ function updateEnemyTrail(dt) {
                 enemyTrail.length - 1
             ];
 
+
         if (
             !last ||
             Math.hypot(
@@ -751,8 +1010,11 @@ function updateEnemyTrail(dt) {
         ) {
 
             enemyTrail.push({
+
                 x: enemy.x,
+
                 y: enemy.y
+
             });
         }
     }
@@ -763,13 +1025,20 @@ function updateEnemyTrail(dt) {
    COLLISION HELPERS
    ========================================================= */
 
-function checkWallCollision(cycle) {
+function checkWallCollision(
+    cycle
+) {
 
     return (
+
         cycle.x < 0 ||
+
         cycle.x >= GRID_SIZE ||
+
         cycle.y < 0 ||
+
         cycle.y >= GRID_SIZE
+
     );
 }
 
@@ -795,6 +1064,7 @@ function pointToSegmentDistance(
     const apy =
         py - ay;
 
+
     const abLengthSquared =
         abx * abx +
         aby * aby;
@@ -812,6 +1082,7 @@ function pointToSegmentDistance(
 
 
     let t =
+
         (
             apx * abx +
             apy * aby
@@ -852,6 +1123,7 @@ function checkTrailCollision(
         !trail ||
         trail.length < 2
     ) {
+
         return false;
     }
 
@@ -903,7 +1175,9 @@ function checkTrailCollision(
 function checkCollisions() {
 
     if (
-        checkWallCollision(player)
+        checkWallCollision(
+            player
+        )
     ) {
 
         endGame(
@@ -915,7 +1189,9 @@ function checkCollisions() {
 
 
     if (
-        checkWallCollision(enemy)
+        checkWallCollision(
+            enemy
+        )
     ) {
 
         endGame(
@@ -925,8 +1201,6 @@ function checkCollisions() {
         return true;
     }
 
-
-    // BLUE TRAIL -> BOTH ARE VULNERABLE
 
     if (
         laserActive &&
@@ -963,8 +1237,6 @@ function checkCollisions() {
         }
     }
 
-
-    // RED TRAIL -> BOTH ARE VULNERABLE
 
     if (
         enemyTrailActive &&
@@ -1108,10 +1380,15 @@ function countOpenDirections(
 
 
     const directions = [
+
         { x: 1, y: 0 },
+
         { x: -1, y: 0 },
+
         { x: 0, y: 1 },
+
         { x: 0, y: -1 }
+
     ];
 
 
@@ -1154,10 +1431,15 @@ function countOpenDirections(
 function enemyAI() {
 
     const directions = [
+
         { x: 1, y: 0 },
+
         { x: -1, y: 0 },
+
         { x: 0, y: 1 },
+
         { x: 0, y: -1 }
+
     ];
 
 
@@ -1168,8 +1450,6 @@ function enemyAI() {
         const direction of directions
     ) {
 
-        // No instant 180-degree turn.
-
         if (
             direction.x === -enemy.dir.x &&
             direction.y === -enemy.dir.y
@@ -1178,8 +1458,6 @@ function enemyAI() {
             continue;
         }
 
-
-        // Look ahead before choosing.
 
         if (
             directionHasDanger(
@@ -1199,6 +1477,7 @@ function enemyAI() {
             -direction.y *
             ENEMY_SIDE_CHECK;
 
+
         const sideY =
             direction.x *
             ENEMY_SIDE_CHECK;
@@ -1215,6 +1494,7 @@ function enemyAI() {
                 direction.x *
                 distance;
 
+
             const forwardY =
                 enemy.y +
                 direction.y *
@@ -1222,14 +1502,19 @@ function enemyAI() {
 
 
             if (
+
                 isPositionDangerous(
                     forwardX + sideX,
                     forwardY + sideY
-                ) ||
+                )
+
+                ||
+
                 isPositionDangerous(
                     forwardX - sideX,
                     forwardY - sideY
                 )
+
             ) {
 
                 sideDanger = true;
@@ -1242,8 +1527,6 @@ function enemyAI() {
         let score = 0;
 
 
-        // Prefer continuing straight.
-
         if (
             direction.x === enemy.dir.x &&
             direction.y === enemy.dir.y
@@ -1253,12 +1536,11 @@ function enemyAI() {
         }
 
 
-        // Prefer open areas.
-
         const openSpace =
             countOpenDirections(
                 enemy.x +
                 direction.x * 2,
+
                 enemy.y +
                 direction.y * 2
             );
@@ -1269,11 +1551,10 @@ function enemyAI() {
 
 
         if (sideDanger) {
+
             score -= 10;
         }
 
-
-        // Strongly punish dangerous paths.
 
         for (
             let distance = 1;
@@ -1285,6 +1566,7 @@ function enemyAI() {
                 enemy.x +
                 direction.x *
                 distance;
+
 
             const checkY =
                 enemy.y +
@@ -1304,11 +1586,10 @@ function enemyAI() {
         }
 
 
-        // Slightly favor approaching the player.
-
         const futureX =
             enemy.x +
             direction.x * 5;
+
 
         const futureY =
             enemy.y +
@@ -1316,24 +1597,34 @@ function enemyAI() {
 
 
         const distanceToPlayer =
+
             Math.abs(
                 futureX - player.x
-            ) +
+            )
+
+            +
+
             Math.abs(
                 futureY - player.y
             );
 
 
         score +=
+
             Math.max(
                 0,
                 12 - distanceToPlayer
-            ) * 0.35;
+            )
+
+            * 0.35;
 
 
         candidates.push({
+
             direction,
+
             score
+
         });
     }
 
@@ -1377,8 +1668,6 @@ function enemyAI() {
     }
 
 
-    // Emergency escape.
-
     let emergencyChoice = null;
 
     let emergencyScore =
@@ -1412,6 +1701,7 @@ function enemyAI() {
                 direction.x *
                 distance;
 
+
             const y =
                 enemy.y +
                 direction.y *
@@ -1419,15 +1709,22 @@ function enemyAI() {
 
 
             if (
+
                 x < 0.5 ||
+
                 x > GRID_SIZE - 0.5 ||
+
                 y < 0.5 ||
+
                 y > GRID_SIZE - 0.5
+
             ) {
 
                 score -= 20;
 
-            } else if (
+            }
+
+            else if (
                 isPositionDangerous(
                     x,
                     y
@@ -1436,7 +1733,9 @@ function enemyAI() {
 
                 score -= 15;
 
-            } else {
+            }
+
+            else {
 
                 score += 3;
             }
@@ -1475,11 +1774,18 @@ function drawGrid() {
 
 
     ctx.strokeStyle =
+
         document.body.classList.contains(
             "redMode"
         )
-            ? "rgba(255, 50, 30, 0.12)"
-            : "rgba(0, 110, 255, 0.12)";
+
+        ?
+
+        "rgba(255, 50, 30, 0.12)"
+
+        :
+
+        "rgba(0, 110, 255, 0.12)";
 
 
     ctx.lineWidth = 1;
@@ -1560,7 +1866,6 @@ function drawTrail(
     ctx.shadowBlur =
         16;
 
-
     ctx.strokeStyle =
         color;
 
@@ -1604,7 +1909,6 @@ function drawTrail(
 
 
     ctx.shadowBlur = 0;
-
 
     ctx.strokeStyle =
         "#ffffff";
@@ -1662,6 +1966,7 @@ function drawCycle(
         cycle.x *
         cellSize;
 
+
     const y =
         cycle.y *
         cellSize;
@@ -1682,6 +1987,7 @@ function drawCycle(
         y
     );
 
+
     ctx.rotate(
         angle
     );
@@ -1689,6 +1995,7 @@ function drawCycle(
 
     ctx.shadowColor =
         mainColor;
+
 
     ctx.shadowBlur =
         18;
@@ -1699,10 +2006,15 @@ function drawCycle(
 
 
     ctx.fillRect(
+
         -cellSize * 0.55,
+
         -cellSize * 0.22,
+
         cellSize * 1.1,
+
         cellSize * 0.44
+
     );
 
 
@@ -1711,18 +2023,28 @@ function drawCycle(
 
 
     ctx.fillRect(
+
         -cellSize * 0.58,
+
         -cellSize * 0.12,
+
         cellSize * 1.16,
+
         cellSize * 0.24
+
     );
 
 
     ctx.fillRect(
+
         cellSize * 0.32,
+
         -cellSize * 0.25,
+
         cellSize * 0.28,
+
         cellSize * 0.5
+
     );
 
 
@@ -1733,10 +2055,12 @@ function drawCycle(
 function draw() {
 
     ctx.clearRect(
+
         0,
         0,
         canvasSize,
         canvasSize
+
     );
 
 
@@ -1762,16 +2086,24 @@ function draw() {
 
 
     drawCycle(
+
         player,
+
         "#00c8ff",
+
         "#00141f"
+
     );
 
 
     drawCycle(
+
         enemy,
+
         "#ff2222",
+
         "#200000"
+
     );
 }
 
@@ -1798,10 +2130,12 @@ function toggleLaser() {
     if (laserActive) {
 
         playerTrail = [
+
             {
                 x: player.x,
                 y: player.y
             }
+
         ];
 
     } else {
@@ -1818,9 +2152,12 @@ function toggleLaser() {
    GAME OVER
    ========================================================= */
 
-function endGame(message) {
+function endGame(
+    message
+) {
 
     if (gameOver) {
+
         return;
     }
 
@@ -1846,6 +2183,7 @@ function endGame(message) {
 function togglePause() {
 
     if (gameOver) {
+
         return;
     }
 
@@ -1858,6 +2196,7 @@ function togglePause() {
 
         pauseMenu.style.display =
             "none";
+
 
         lastTime =
             performance.now();
@@ -1875,7 +2214,9 @@ pauseButton.addEventListener(
     event => {
 
         event.preventDefault();
+
         event.stopPropagation();
+
     }
 );
 
@@ -1885,9 +2226,11 @@ pauseButton.addEventListener(
     event => {
 
         event.preventDefault();
+
         event.stopPropagation();
 
         togglePause();
+
     }
 );
 
@@ -1897,18 +2240,23 @@ resumeButton.addEventListener(
     event => {
 
         event.preventDefault();
+
         event.stopPropagation();
+
 
         if (!gameOver) {
 
             gameRunning = true;
 
+
             pauseMenu.style.display =
                 "none";
+
 
             lastTime =
                 performance.now();
         }
+
     }
 );
 
@@ -1918,30 +2266,18 @@ restartButton.addEventListener(
     event => {
 
         event.preventDefault();
+
         event.stopPropagation();
 
         resetGame();
+
     }
 );
 
 
 /* =========================================================
-   FIXED ANYWHERE-ON-SCREEN TOUCH SYSTEM
+   TOUCH CONTROLS
    ========================================================= */
-
-/*
-    IMPORTANT:
-
-    This is ONE unified pointer system.
-
-    - Press anywhere -> remember starting point.
-    - Release anywhere -> determine tap or swipe.
-    - Swipe -> steer.
-    - Tap -> count toward triple tap.
-    - Triple tap -> toggle laser.
-
-    The pause/menu buttons are excluded.
-*/
 
 document.addEventListener(
     "pointerdown",
@@ -1965,8 +2301,10 @@ document.addEventListener(
         pointerStartX =
             event.clientX;
 
+
         pointerStartY =
             event.clientY;
+
     },
     {
         passive: false
@@ -1991,6 +2329,7 @@ document.addEventListener(
 
 
         if (!pointerDown) {
+
             return;
         }
 
@@ -2015,18 +2354,15 @@ document.addEventListener(
             );
 
 
-        /*
-            SWIPE
-        */
+        /* SWIPE */
 
         if (
             distance >=
             SWIPE_DISTANCE
         ) {
 
-            // A swipe is NOT a tap.
-
             tapCount = 0;
+
 
             if (tapTimer) {
 
@@ -2090,9 +2426,7 @@ document.addEventListener(
         }
 
 
-        /*
-            TAP
-        */
+        /* TAP */
 
         if (
             !gameRunning ||
@@ -2132,9 +2466,7 @@ document.addEventListener(
         }
 
 
-        /*
-            TRIPLE TAP
-        */
+        /* TRIPLE TAP */
 
         if (
             tapCount === 3
@@ -2163,10 +2495,9 @@ document.addEventListener(
 );
 
 
-/*
-    Prevent the browser from treating touches
-    as scrolling/zooming while playing.
-*/
+/* =========================================================
+   PREVENT PAGE SCROLLING
+   ========================================================= */
 
 document.addEventListener(
     "touchmove",
@@ -2180,6 +2511,7 @@ document.addEventListener(
 
             return;
         }
+
 
         event.preventDefault();
 
@@ -2263,6 +2595,7 @@ document.addEventListener(
 
             toggleLaser();
         }
+
     }
 );
 
@@ -2271,7 +2604,9 @@ document.addEventListener(
    GAME LOOP
    ========================================================= */
 
-function update(dt) {
+function update(
+    dt
+) {
 
     if (
         !gameRunning ||
@@ -2290,6 +2625,7 @@ function update(dt) {
         dt
     );
 
+
     moveCycle(
         enemy,
         dt
@@ -2298,7 +2634,10 @@ function update(dt) {
 
     updatePlayerTrail();
 
-    updateEnemyTrail(dt);
+
+    updateEnemyTrail(
+        dt
+    );
 
 
     enemyAI();
@@ -2309,11 +2648,14 @@ function update(dt) {
 
     updateBackgroundMode();
 
+
     updateHUD();
 }
 
 
-function gameLoop(now) {
+function gameLoop(
+    now
+) {
 
     const dt =
         Math.min(
@@ -2326,6 +2668,7 @@ function gameLoop(now) {
 
 
     update(dt);
+
 
     draw();
 
@@ -2341,6 +2684,7 @@ function gameLoop(now) {
    ========================================================= */
 
 resetGame();
+
 
 requestAnimationFrame(
     gameLoop
