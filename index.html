@@ -1,0 +1,2352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Neon Cycles</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at center, #001b35 0%, #000814 55%, #000000 100%);
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    touch-action: none;
+    user-select: none;
+    transition: background 0.5s ease;
+}
+
+body.redMode {
+    background:
+        radial-gradient(circle at center, #350000 0%, #140000 55%, #000000 100%);
+}
+
+#gameWrapper {
+    position: relative;
+    width: min(94vw, 700px);
+    aspect-ratio: 1 / 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+
+    background:
+        linear-gradient(rgba(0, 100, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 100, 255, 0.04) 1px, transparent 1px),
+        radial-gradient(circle, #001a30 0%, #000814 70%);
+
+    border: 2px solid #008cff;
+
+    box-shadow:
+        0 0 12px #008cff,
+        inset 0 0 30px rgba(0, 110, 255, 0.25);
+
+    transition:
+        background 0.5s ease,
+        border-color 0.5s ease,
+        box-shadow 0.5s ease;
+}
+
+canvas.redMode {
+    background:
+        linear-gradient(rgba(255, 40, 0, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 40, 0, 0.04) 1px, transparent 1px),
+        radial-gradient(circle, #300000 0%, #080000 70%);
+
+    border-color: #ff2222;
+
+    box-shadow:
+        0 0 12px #ff2222,
+        inset 0 0 30px rgba(255, 0, 0, 0.25);
+}
+
+#pauseButton {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 20;
+
+    width: 42px;
+    height: 42px;
+
+    border: 2px solid #00aaff;
+    border-radius: 8px;
+
+    background: rgba(0, 10, 25, 0.85);
+    color: #00c8ff;
+
+    font-size: 23px;
+    font-weight: bold;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow:
+        0 0 10px #008cff,
+        inset 0 0 8px rgba(0, 150, 255, 0.3);
+
+    touch-action: manipulation;
+}
+
+#pauseMenu {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+
+    display: none;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0, 5, 15, 0.72);
+    backdrop-filter: blur(4px);
+
+    touch-action: manipulation;
+}
+
+#pauseBox {
+    width: min(75%, 300px);
+    padding: 28px;
+
+    border: 2px solid #00aaff;
+    border-radius: 14px;
+
+    background: rgba(0, 12, 30, 0.95);
+
+    box-shadow:
+        0 0 25px #008cff,
+        inset 0 0 20px rgba(0, 140, 255, 0.15);
+
+    text-align: center;
+}
+
+#pauseBox h2 {
+    margin: 0 0 22px;
+
+    color: #00c8ff;
+
+    text-shadow:
+        0 0 10px #008cff;
+
+    letter-spacing: 3px;
+}
+
+.menuButton {
+    width: 100%;
+    margin: 8px 0;
+    padding: 13px;
+
+    border: 2px solid #008cff;
+    border-radius: 8px;
+
+    background: #001329;
+    color: #00c8ff;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    box-shadow:
+        0 0 8px rgba(0, 140, 255, 0.5);
+
+    touch-action: manipulation;
+}
+
+#hud {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    right: 0;
+
+    z-index: 10;
+
+    pointer-events: none;
+    text-align: center;
+}
+
+#stopwatch {
+    display: inline-block;
+
+    padding: 5px 12px;
+    border-radius: 8px;
+
+    background: rgba(0, 5, 15, 0.72);
+
+    color: #ffffff;
+
+    font-size: 17px;
+    font-weight: bold;
+
+    letter-spacing: 2px;
+
+    text-shadow:
+        0 0 8px #ffffff;
+}
+
+#laserStatus {
+    position: absolute;
+
+    left: 12px;
+    bottom: 10px;
+
+    color: #00c8ff;
+
+    font-size: 12px;
+    font-weight: bold;
+
+    text-shadow:
+        0 0 8px #00aaff;
+}
+
+#enemyStatus {
+    position: absolute;
+
+    right: 12px;
+    bottom: 10px;
+
+    color: #ff3333;
+
+    font-size: 12px;
+    font-weight: bold;
+
+    text-shadow:
+        0 0 8px #ff0000;
+}
+
+#gameMessage {
+    position: absolute;
+    inset: 0;
+
+    z-index: 15;
+
+    display: none;
+    justify-content: center;
+    align-items: center;
+
+    pointer-events: none;
+}
+
+#messageText {
+    padding: 18px 25px;
+
+    border: 2px solid #00c8ff;
+    border-radius: 12px;
+
+    background: rgba(0, 5, 15, 0.9);
+
+    color: #ffffff;
+
+    font-size: 26px;
+    font-weight: bold;
+
+    text-align: center;
+
+    text-shadow:
+        0 0 12px #00aaff;
+
+    box-shadow:
+        0 0 20px #008cff;
+}
+</style>
+</head>
+
+<body>
+
+<div id="gameWrapper">
+
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="hud">
+        <div id="stopwatch">00:00.00</div>
+    </div>
+
+    <div id="pauseButton">Ⅱ</div>
+
+    <div id="laserStatus">LASER OFF</div>
+    <div id="enemyStatus">RED TRAIL ON</div>
+
+    <div id="pauseMenu">
+        <div id="pauseBox">
+
+            <h2>PAUSED</h2>
+
+            <button class="menuButton" id="resumeButton">
+                RESUME
+            </button>
+
+            <button class="menuButton" id="restartButton">
+                RESTART
+            </button>
+
+        </div>
+    </div>
+
+    <div id="gameMessage">
+        <div id="messageText"></div>
+    </div>
+
+</div>
+
+<script>
+
+const canvas =
+    document.getElementById("gameCanvas");
+
+const ctx =
+    canvas.getContext("2d");
+
+const pauseButton =
+    document.getElementById("pauseButton");
+
+const pauseMenu =
+    document.getElementById("pauseMenu");
+
+const resumeButton =
+    document.getElementById("resumeButton");
+
+const restartButton =
+    document.getElementById("restartButton");
+
+const stopwatch =
+    document.getElementById("stopwatch");
+
+const laserStatus =
+    document.getElementById("laserStatus");
+
+const enemyStatus =
+    document.getElementById("enemyStatus");
+
+const gameMessage =
+    document.getElementById("gameMessage");
+
+const messageText =
+    document.getElementById("messageText");
+
+
+/* =========================================================
+   GAME SETTINGS
+   ========================================================= */
+
+const GRID_SIZE = 25;
+
+const SWIPE_DISTANCE = 25;
+
+const TRIPLE_TAP_TIME = 500;
+
+const ENEMY_TRAIL_MIN_TIME = 0.7;
+const ENEMY_TRAIL_MAX_TIME = 2.8;
+
+const ENEMY_LOOK_AHEAD = 5.0;
+const ENEMY_SIDE_CHECK = 1.1;
+
+
+/* =========================================================
+   GAME STATE
+   ========================================================= */
+
+let canvasSize = 0;
+let cellSize = 0;
+
+let gameRunning = true;
+let gameOver = false;
+
+let survivalTime = 0;
+
+let laserActive = false;
+let playerTrail = [];
+
+let enemyTrailActive = true;
+let enemyTrail = [];
+let enemyTrailTimer = 0;
+
+
+/* =========================================================
+   TOUCH STATE
+   ========================================================= */
+
+let pointerDown = false;
+
+let pointerStartX = 0;
+let pointerStartY = 0;
+
+let tapCount = 0;
+let tapTimer = null;
+
+
+/* =========================================================
+   CYCLES
+   ========================================================= */
+
+const player = {
+
+    x: 3,
+    y: 12,
+
+    dir: {
+        x: 1,
+        y: 0
+    },
+
+    speed: 7.5
+};
+
+const enemy = {
+
+    x: 21,
+    y: 12,
+
+    dir: {
+        x: -1,
+        y: 0
+    },
+
+    speed: 6.5
+};
+
+
+let lastTime =
+    performance.now();
+
+
+/* =========================================================
+   CANVAS
+   ========================================================= */
+
+function resizeCanvas() {
+
+    const rect =
+        canvas.getBoundingClientRect();
+
+    canvas.width =
+        rect.width *
+        devicePixelRatio;
+
+    canvas.height =
+        rect.height *
+        devicePixelRatio;
+
+    ctx.setTransform(
+        devicePixelRatio,
+        0,
+        0,
+        devicePixelRatio,
+        0,
+        0
+    );
+
+    canvasSize =
+        rect.width;
+
+    cellSize =
+        canvasSize /
+        GRID_SIZE;
+}
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+resizeCanvas();
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+function randomRange(min, max) {
+
+    return Math.random() *
+        (max - min) +
+        min;
+}
+
+function setEnemyTrailTimer() {
+
+    enemyTrailTimer =
+        randomRange(
+            ENEMY_TRAIL_MIN_TIME,
+            ENEMY_TRAIL_MAX_TIME
+        );
+}
+
+function resetGame() {
+
+    player.x = 3;
+    player.y = 12;
+
+    player.dir = {
+        x: 1,
+        y: 0
+    };
+
+
+    enemy.x = 21;
+    enemy.y = 12;
+
+    enemy.dir = {
+        x: -1,
+        y: 0
+    };
+
+
+    playerTrail = [];
+
+    laserActive = false;
+
+
+    enemyTrailActive = true;
+
+    enemyTrail = [
+        {
+            x: enemy.x,
+            y: enemy.y
+        }
+    ];
+
+    setEnemyTrailTimer();
+
+
+    survivalTime = 0;
+
+    gameRunning = true;
+    gameOver = false;
+
+
+    gameMessage.style.display =
+        "none";
+
+    pauseMenu.style.display =
+        "none";
+
+
+    tapCount = 0;
+
+    if (tapTimer) {
+
+        clearTimeout(
+            tapTimer
+        );
+
+        tapTimer = null;
+    }
+
+
+    updateBackgroundMode();
+
+    updateHUD();
+
+    lastTime =
+        performance.now();
+}
+
+
+/* =========================================================
+   HUD
+   ========================================================= */
+
+function updateHUD() {
+
+    const totalHundredths =
+        Math.floor(
+            survivalTime * 100
+        );
+
+    const minutes =
+        Math.floor(
+            totalHundredths / 6000
+        );
+
+    const seconds =
+        Math.floor(
+            (totalHundredths % 6000) /
+            100
+        );
+
+    const hundredths =
+        totalHundredths % 100;
+
+
+    stopwatch.textContent =
+        String(minutes).padStart(
+            2,
+            "0"
+        ) +
+        ":" +
+        String(seconds).padStart(
+            2,
+            "0"
+        ) +
+        "." +
+        String(hundredths).padStart(
+            2,
+            "0"
+        );
+
+
+    laserStatus.textContent =
+        laserActive
+            ? "LASER ACTIVE"
+            : "LASER OFF";
+
+
+    enemyStatus.textContent =
+        enemyTrailActive
+            ? "RED TRAIL ON"
+            : "RED TRAIL OFF";
+}
+
+
+/* =========================================================
+   BACKGROUND
+   ========================================================= */
+
+function updateBackgroundMode() {
+
+    const redMode =
+        survivalTime >= 30 &&
+        survivalTime < 60;
+
+    document.body.classList.toggle(
+        "redMode",
+        redMode
+    );
+
+    canvas.classList.toggle(
+        "redMode",
+        redMode
+    );
+}
+
+
+/* =========================================================
+   PLAYER MOVEMENT
+   ========================================================= */
+
+function changeDirection(dx, dy) {
+
+    if (
+        !gameRunning ||
+        gameOver
+    ) {
+        return;
+    }
+
+    if (
+        dx === -player.dir.x &&
+        dy === -player.dir.y
+    ) {
+        return;
+    }
+
+    player.dir = {
+        x: dx,
+        y: dy
+    };
+}
+
+function moveCycle(cycle, dt) {
+
+    cycle.x +=
+        cycle.dir.x *
+        cycle.speed *
+        dt;
+
+    cycle.y +=
+        cycle.dir.y *
+        cycle.speed *
+        dt;
+}
+
+
+/* =========================================================
+   TRAILS
+   ========================================================= */
+
+function updatePlayerTrail() {
+
+    if (!laserActive) {
+        return;
+    }
+
+    const last =
+        playerTrail[
+            playerTrail.length - 1
+        ];
+
+    if (
+        !last ||
+        Math.hypot(
+            player.x - last.x,
+            player.y - last.y
+        ) > 0.08
+    ) {
+
+        playerTrail.push({
+            x: player.x,
+            y: player.y
+        });
+    }
+}
+
+
+function updateEnemyTrail(dt) {
+
+    enemyTrailTimer -= dt;
+
+    if (
+        enemyTrailTimer <= 0
+    ) {
+
+        enemyTrailActive =
+            !enemyTrailActive;
+
+
+        if (enemyTrailActive) {
+
+            enemyTrail = [
+                {
+                    x: enemy.x,
+                    y: enemy.y
+                }
+            ];
+
+        } else {
+
+            enemyTrail = [];
+        }
+
+
+        setEnemyTrailTimer();
+    }
+
+
+    if (enemyTrailActive) {
+
+        const last =
+            enemyTrail[
+                enemyTrail.length - 1
+            ];
+
+        if (
+            !last ||
+            Math.hypot(
+                enemy.x - last.x,
+                enemy.y - last.y
+            ) > 0.08
+        ) {
+
+            enemyTrail.push({
+                x: enemy.x,
+                y: enemy.y
+            });
+        }
+    }
+}
+
+
+/* =========================================================
+   COLLISION HELPERS
+   ========================================================= */
+
+function checkWallCollision(cycle) {
+
+    return (
+        cycle.x < 0 ||
+        cycle.x >= GRID_SIZE ||
+        cycle.y < 0 ||
+        cycle.y >= GRID_SIZE
+    );
+}
+
+
+function pointToSegmentDistance(
+    px,
+    py,
+    ax,
+    ay,
+    bx,
+    by
+) {
+
+    const abx =
+        bx - ax;
+
+    const aby =
+        by - ay;
+
+    const apx =
+        px - ax;
+
+    const apy =
+        py - ay;
+
+    const abLengthSquared =
+        abx * abx +
+        aby * aby;
+
+
+    if (
+        abLengthSquared === 0
+    ) {
+
+        return Math.hypot(
+            px - ax,
+            py - ay
+        );
+    }
+
+
+    let t =
+        (
+            apx * abx +
+            apy * aby
+        ) /
+        abLengthSquared;
+
+
+    t =
+        Math.max(
+            0,
+            Math.min(
+                1,
+                t
+            )
+        );
+
+
+    const closestX =
+        ax + abx * t;
+
+    const closestY =
+        ay + aby * t;
+
+
+    return Math.hypot(
+        px - closestX,
+        py - closestY
+    );
+}
+
+
+function checkTrailCollision(
+    cycle,
+    trail
+) {
+
+    if (
+        !trail ||
+        trail.length < 2
+    ) {
+        return false;
+    }
+
+
+    const end =
+        Math.max(
+            0,
+            trail.length - 5
+        );
+
+
+    for (
+        let i = 0;
+        i < end - 1;
+        i++
+    ) {
+
+        const a =
+            trail[i];
+
+        const b =
+            trail[i + 1];
+
+
+        if (
+            pointToSegmentDistance(
+                cycle.x,
+                cycle.y,
+                a.x,
+                a.y,
+                b.x,
+                b.y
+            ) < 0.32
+        ) {
+
+            return true;
+        }
+    }
+
+
+    return false;
+}
+
+
+/* =========================================================
+   COLLISIONS
+   ========================================================= */
+
+function checkCollisions() {
+
+    if (
+        checkWallCollision(player)
+    ) {
+
+        endGame(
+            "YOU CRASHED!"
+        );
+
+        return true;
+    }
+
+
+    if (
+        checkWallCollision(enemy)
+    ) {
+
+        endGame(
+            "RED CYCLE CRASHED!"
+        );
+
+        return true;
+    }
+
+
+    // BLUE TRAIL -> BOTH ARE VULNERABLE
+
+    if (
+        laserActive &&
+        playerTrail.length >= 2
+    ) {
+
+        if (
+            checkTrailCollision(
+                player,
+                playerTrail
+            )
+        ) {
+
+            endGame(
+                "YOU HIT THE BLUE TRAIL!"
+            );
+
+            return true;
+        }
+
+
+        if (
+            checkTrailCollision(
+                enemy,
+                playerTrail
+            )
+        ) {
+
+            endGame(
+                "RED CYCLE HIT THE BLUE TRAIL!"
+            );
+
+            return true;
+        }
+    }
+
+
+    // RED TRAIL -> BOTH ARE VULNERABLE
+
+    if (
+        enemyTrailActive &&
+        enemyTrail.length >= 2
+    ) {
+
+        if (
+            checkTrailCollision(
+                player,
+                enemyTrail
+            )
+        ) {
+
+            endGame(
+                "YOU HIT THE RED TRAIL!"
+            );
+
+            return true;
+        }
+
+
+        if (
+            checkTrailCollision(
+                enemy,
+                enemyTrail
+            )
+        ) {
+
+            endGame(
+                "RED CYCLE HIT ITS TRAIL!"
+            );
+
+            return true;
+        }
+    }
+
+
+    return false;
+}
+
+
+/* =========================================================
+   SMART ENEMY AI
+   ========================================================= */
+
+function isPositionDangerous(
+    x,
+    y
+) {
+
+    if (
+        x < 0.8 ||
+        x > GRID_SIZE - 0.8 ||
+        y < 0.8 ||
+        y > GRID_SIZE - 0.8
+    ) {
+
+        return true;
+    }
+
+
+    if (
+        checkTrailCollision(
+            { x, y },
+            playerTrail
+        )
+    ) {
+
+        return true;
+    }
+
+
+    if (
+        checkTrailCollision(
+            { x, y },
+            enemyTrail
+        )
+    ) {
+
+        return true;
+    }
+
+
+    return false;
+}
+
+
+function directionHasDanger(
+    direction,
+    distance
+) {
+
+    const steps = 10;
+
+
+    for (
+        let i = 1;
+        i <= steps;
+        i++
+    ) {
+
+        const progress =
+            distance *
+            (i / steps);
+
+
+        const x =
+            enemy.x +
+            direction.x *
+            progress;
+
+
+        const y =
+            enemy.y +
+            direction.y *
+            progress;
+
+
+        if (
+            isPositionDangerous(
+                x,
+                y
+            )
+        ) {
+
+            return true;
+        }
+    }
+
+
+    return false;
+}
+
+
+function countOpenDirections(
+    x,
+    y
+) {
+
+    let open = 0;
+
+
+    const directions = [
+        { x: 1, y: 0 },
+        { x: -1, y: 0 },
+        { x: 0, y: 1 },
+        { x: 0, y: -1 }
+    ];
+
+
+    for (
+        const d of directions
+    ) {
+
+        if (
+            d.x === -enemy.dir.x &&
+            d.y === -enemy.dir.y
+        ) {
+
+            continue;
+        }
+
+
+        const testX =
+            x + d.x * 1.5;
+
+        const testY =
+            y + d.y * 1.5;
+
+
+        if (
+            !isPositionDangerous(
+                testX,
+                testY
+            )
+        ) {
+
+            open++;
+        }
+    }
+
+
+    return open;
+}
+
+
+function enemyAI() {
+
+    const directions = [
+        { x: 1, y: 0 },
+        { x: -1, y: 0 },
+        { x: 0, y: 1 },
+        { x: 0, y: -1 }
+    ];
+
+
+    const candidates = [];
+
+
+    for (
+        const direction of directions
+    ) {
+
+        // No instant 180-degree turn.
+
+        if (
+            direction.x === -enemy.dir.x &&
+            direction.y === -enemy.dir.y
+        ) {
+
+            continue;
+        }
+
+
+        // Look ahead before choosing.
+
+        if (
+            directionHasDanger(
+                direction,
+                ENEMY_LOOK_AHEAD
+            )
+        ) {
+
+            continue;
+        }
+
+
+        let sideDanger = false;
+
+
+        const sideX =
+            -direction.y *
+            ENEMY_SIDE_CHECK;
+
+        const sideY =
+            direction.x *
+            ENEMY_SIDE_CHECK;
+
+
+        for (
+            let distance = 1;
+            distance <= 4;
+            distance++
+        ) {
+
+            const forwardX =
+                enemy.x +
+                direction.x *
+                distance;
+
+            const forwardY =
+                enemy.y +
+                direction.y *
+                distance;
+
+
+            if (
+                isPositionDangerous(
+                    forwardX + sideX,
+                    forwardY + sideY
+                ) ||
+                isPositionDangerous(
+                    forwardX - sideX,
+                    forwardY - sideY
+                )
+            ) {
+
+                sideDanger = true;
+
+                break;
+            }
+        }
+
+
+        let score = 0;
+
+
+        // Prefer continuing straight.
+
+        if (
+            direction.x === enemy.dir.x &&
+            direction.y === enemy.dir.y
+        ) {
+
+            score += 8;
+        }
+
+
+        // Prefer open areas.
+
+        const openSpace =
+            countOpenDirections(
+                enemy.x +
+                direction.x * 2,
+                enemy.y +
+                direction.y * 2
+            );
+
+
+        score +=
+            openSpace * 5;
+
+
+        if (sideDanger) {
+            score -= 10;
+        }
+
+
+        // Strongly punish dangerous paths.
+
+        for (
+            let distance = 1;
+            distance <= 4;
+            distance++
+        ) {
+
+            const checkX =
+                enemy.x +
+                direction.x *
+                distance;
+
+            const checkY =
+                enemy.y +
+                direction.y *
+                distance;
+
+
+            if (
+                isPositionDangerous(
+                    checkX,
+                    checkY
+                )
+            ) {
+
+                score -= 100;
+            }
+        }
+
+
+        // Slightly favor approaching the player.
+
+        const futureX =
+            enemy.x +
+            direction.x * 5;
+
+        const futureY =
+            enemy.y +
+            direction.y * 5;
+
+
+        const distanceToPlayer =
+            Math.abs(
+                futureX - player.x
+            ) +
+            Math.abs(
+                futureY - player.y
+            );
+
+
+        score +=
+            Math.max(
+                0,
+                12 - distanceToPlayer
+            ) * 0.35;
+
+
+        candidates.push({
+            direction,
+            score
+        });
+    }
+
+
+    if (
+        candidates.length > 0
+    ) {
+
+        candidates.sort(
+            (a, b) =>
+                b.score - a.score
+        );
+
+
+        const bestScore =
+            candidates[0].score;
+
+
+        const goodChoices =
+            candidates.filter(
+                candidate =>
+                    candidate.score >=
+                    bestScore - 4
+            );
+
+
+        const choice =
+            goodChoices[
+                Math.floor(
+                    Math.random() *
+                    goodChoices.length
+                )
+            ];
+
+
+        enemy.dir =
+            choice.direction;
+
+
+        return;
+    }
+
+
+    // Emergency escape.
+
+    let emergencyChoice = null;
+
+    let emergencyScore =
+        -Infinity;
+
+
+    for (
+        const direction of directions
+    ) {
+
+        if (
+            direction.x === -enemy.dir.x &&
+            direction.y === -enemy.dir.y
+        ) {
+
+            continue;
+        }
+
+
+        let score = 0;
+
+
+        for (
+            let distance = 0.5;
+            distance <= 3;
+            distance += 0.5
+        ) {
+
+            const x =
+                enemy.x +
+                direction.x *
+                distance;
+
+            const y =
+                enemy.y +
+                direction.y *
+                distance;
+
+
+            if (
+                x < 0.5 ||
+                x > GRID_SIZE - 0.5 ||
+                y < 0.5 ||
+                y > GRID_SIZE - 0.5
+            ) {
+
+                score -= 20;
+
+            } else if (
+                isPositionDangerous(
+                    x,
+                    y
+                )
+            ) {
+
+                score -= 15;
+
+            } else {
+
+                score += 3;
+            }
+        }
+
+
+        if (
+            score >
+            emergencyScore
+        ) {
+
+            emergencyScore =
+                score;
+
+            emergencyChoice =
+                direction;
+        }
+    }
+
+
+    if (emergencyChoice) {
+
+        enemy.dir =
+            emergencyChoice;
+    }
+}
+
+
+/* =========================================================
+   DRAWING
+   ========================================================= */
+
+function drawGrid() {
+
+    ctx.save();
+
+
+    ctx.strokeStyle =
+        document.body.classList.contains(
+            "redMode"
+        )
+            ? "rgba(255, 50, 30, 0.12)"
+            : "rgba(0, 110, 255, 0.12)";
+
+
+    ctx.lineWidth = 1;
+
+
+    for (
+        let i = 0;
+        i <= GRID_SIZE;
+        i++
+    ) {
+
+        const p =
+            i * cellSize;
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            p,
+            0
+        );
+
+        ctx.lineTo(
+            p,
+            canvasSize
+        );
+
+        ctx.stroke();
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            0,
+            p
+        );
+
+        ctx.lineTo(
+            canvasSize,
+            p
+        );
+
+        ctx.stroke();
+    }
+
+
+    ctx.restore();
+}
+
+
+function drawTrail(
+    trail,
+    color
+) {
+
+    if (
+        !trail ||
+        trail.length < 2
+    ) {
+
+        return;
+    }
+
+
+    ctx.save();
+
+
+    ctx.lineCap =
+        "round";
+
+    ctx.lineJoin =
+        "round";
+
+
+    ctx.shadowColor =
+        color;
+
+    ctx.shadowBlur =
+        16;
+
+
+    ctx.strokeStyle =
+        color;
+
+
+    ctx.lineWidth =
+        Math.max(
+            3,
+            cellSize * 0.25
+        );
+
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+        trail[0].x *
+            cellSize,
+
+        trail[0].y *
+            cellSize
+    );
+
+
+    for (
+        let i = 1;
+        i < trail.length;
+        i++
+    ) {
+
+        ctx.lineTo(
+            trail[i].x *
+                cellSize,
+
+            trail[i].y *
+                cellSize
+        );
+    }
+
+
+    ctx.stroke();
+
+
+    ctx.shadowBlur = 0;
+
+
+    ctx.strokeStyle =
+        "#ffffff";
+
+
+    ctx.lineWidth =
+        Math.max(
+            1,
+            cellSize * 0.07
+        );
+
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+        trail[0].x *
+            cellSize,
+
+        trail[0].y *
+            cellSize
+    );
+
+
+    for (
+        let i = 1;
+        i < trail.length;
+        i++
+    ) {
+
+        ctx.lineTo(
+            trail[i].x *
+                cellSize,
+
+            trail[i].y *
+                cellSize
+        );
+    }
+
+
+    ctx.stroke();
+
+
+    ctx.restore();
+}
+
+
+function drawCycle(
+    cycle,
+    mainColor,
+    darkColor
+) {
+
+    const x =
+        cycle.x *
+        cellSize;
+
+    const y =
+        cycle.y *
+        cellSize;
+
+
+    const angle =
+        Math.atan2(
+            cycle.dir.y,
+            cycle.dir.x
+        );
+
+
+    ctx.save();
+
+
+    ctx.translate(
+        x,
+        y
+    );
+
+    ctx.rotate(
+        angle
+    );
+
+
+    ctx.shadowColor =
+        mainColor;
+
+    ctx.shadowBlur =
+        18;
+
+
+    ctx.fillStyle =
+        darkColor;
+
+
+    ctx.fillRect(
+        -cellSize * 0.55,
+        -cellSize * 0.22,
+        cellSize * 1.1,
+        cellSize * 0.44
+    );
+
+
+    ctx.fillStyle =
+        mainColor;
+
+
+    ctx.fillRect(
+        -cellSize * 0.58,
+        -cellSize * 0.12,
+        cellSize * 1.16,
+        cellSize * 0.24
+    );
+
+
+    ctx.fillRect(
+        cellSize * 0.32,
+        -cellSize * 0.25,
+        cellSize * 0.28,
+        cellSize * 0.5
+    );
+
+
+    ctx.restore();
+}
+
+
+function draw() {
+
+    ctx.clearRect(
+        0,
+        0,
+        canvasSize,
+        canvasSize
+    );
+
+
+    drawGrid();
+
+
+    if (laserActive) {
+
+        drawTrail(
+            playerTrail,
+            "#00c8ff"
+        );
+    }
+
+
+    if (enemyTrailActive) {
+
+        drawTrail(
+            enemyTrail,
+            "#ff2222"
+        );
+    }
+
+
+    drawCycle(
+        player,
+        "#00c8ff",
+        "#00141f"
+    );
+
+
+    drawCycle(
+        enemy,
+        "#ff2222",
+        "#200000"
+    );
+}
+
+
+/* =========================================================
+   LASER
+   ========================================================= */
+
+function toggleLaser() {
+
+    if (
+        !gameRunning ||
+        gameOver
+    ) {
+
+        return;
+    }
+
+
+    laserActive =
+        !laserActive;
+
+
+    if (laserActive) {
+
+        playerTrail = [
+            {
+                x: player.x,
+                y: player.y
+            }
+        ];
+
+    } else {
+
+        playerTrail = [];
+    }
+
+
+    updateHUD();
+}
+
+
+/* =========================================================
+   GAME OVER
+   ========================================================= */
+
+function endGame(message) {
+
+    if (gameOver) {
+        return;
+    }
+
+
+    gameOver = true;
+
+    gameRunning = false;
+
+
+    messageText.textContent =
+        message;
+
+
+    gameMessage.style.display =
+        "flex";
+}
+
+
+/* =========================================================
+   PAUSE
+   ========================================================= */
+
+function togglePause() {
+
+    if (gameOver) {
+        return;
+    }
+
+
+    gameRunning =
+        !gameRunning;
+
+
+    if (gameRunning) {
+
+        pauseMenu.style.display =
+            "none";
+
+        lastTime =
+            performance.now();
+
+    } else {
+
+        pauseMenu.style.display =
+            "flex";
+    }
+}
+
+
+pauseButton.addEventListener(
+    "pointerdown",
+    event => {
+
+        event.preventDefault();
+        event.stopPropagation();
+    }
+);
+
+
+pauseButton.addEventListener(
+    "pointerup",
+    event => {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        togglePause();
+    }
+);
+
+
+resumeButton.addEventListener(
+    "pointerdown",
+    event => {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (!gameOver) {
+
+            gameRunning = true;
+
+            pauseMenu.style.display =
+                "none";
+
+            lastTime =
+                performance.now();
+        }
+    }
+);
+
+
+restartButton.addEventListener(
+    "pointerdown",
+    event => {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        resetGame();
+    }
+);
+
+
+/* =========================================================
+   FIXED ANYWHERE-ON-SCREEN TOUCH SYSTEM
+   ========================================================= */
+
+/*
+    IMPORTANT:
+
+    This is ONE unified pointer system.
+
+    - Press anywhere -> remember starting point.
+    - Release anywhere -> determine tap or swipe.
+    - Swipe -> steer.
+    - Tap -> count toward triple tap.
+    - Triple tap -> toggle laser.
+
+    The pause/menu buttons are excluded.
+*/
+
+document.addEventListener(
+    "pointerdown",
+    event => {
+
+        if (
+            event.target.closest(
+                "#pauseButton, #pauseMenu"
+            )
+        ) {
+
+            pointerDown = false;
+
+            return;
+        }
+
+
+        pointerDown = true;
+
+
+        pointerStartX =
+            event.clientX;
+
+        pointerStartY =
+            event.clientY;
+    },
+    {
+        passive: false
+    }
+);
+
+
+document.addEventListener(
+    "pointerup",
+    event => {
+
+        if (
+            event.target.closest(
+                "#pauseButton, #pauseMenu"
+            )
+        ) {
+
+            pointerDown = false;
+
+            return;
+        }
+
+
+        if (!pointerDown) {
+            return;
+        }
+
+
+        pointerDown = false;
+
+
+        const dx =
+            event.clientX -
+            pointerStartX;
+
+
+        const dy =
+            event.clientY -
+            pointerStartY;
+
+
+        const distance =
+            Math.hypot(
+                dx,
+                dy
+            );
+
+
+        /*
+            SWIPE
+        */
+
+        if (
+            distance >=
+            SWIPE_DISTANCE
+        ) {
+
+            // A swipe is NOT a tap.
+
+            tapCount = 0;
+
+            if (tapTimer) {
+
+                clearTimeout(
+                    tapTimer
+                );
+
+                tapTimer = null;
+            }
+
+
+            if (
+                !gameRunning ||
+                gameOver
+            ) {
+
+                return;
+            }
+
+
+            if (
+                Math.abs(dx) >
+                Math.abs(dy)
+            ) {
+
+                if (dx > 0) {
+
+                    changeDirection(
+                        1,
+                        0
+                    );
+
+                } else {
+
+                    changeDirection(
+                        -1,
+                        0
+                    );
+                }
+
+            } else {
+
+                if (dy > 0) {
+
+                    changeDirection(
+                        0,
+                        1
+                    );
+
+                } else {
+
+                    changeDirection(
+                        0,
+                        -1
+                    );
+                }
+            }
+
+
+            return;
+        }
+
+
+        /*
+            TAP
+        */
+
+        if (
+            !gameRunning ||
+            gameOver
+        ) {
+
+            return;
+        }
+
+
+        tapCount++;
+
+
+        if (
+            tapCount === 1
+        ) {
+
+            if (tapTimer) {
+
+                clearTimeout(
+                    tapTimer
+                );
+            }
+
+
+            tapTimer =
+                setTimeout(
+                    () => {
+
+                        tapCount = 0;
+
+                        tapTimer = null;
+
+                    },
+                    TRIPLE_TAP_TIME
+                );
+        }
+
+
+        /*
+            TRIPLE TAP
+        */
+
+        if (
+            tapCount === 3
+        ) {
+
+            if (tapTimer) {
+
+                clearTimeout(
+                    tapTimer
+                );
+
+                tapTimer = null;
+            }
+
+
+            tapCount = 0;
+
+
+            toggleLaser();
+        }
+
+    },
+    {
+        passive: false
+    }
+);
+
+
+/*
+    Prevent the browser from treating touches
+    as scrolling/zooming while playing.
+*/
+
+document.addEventListener(
+    "touchmove",
+    event => {
+
+        if (
+            event.target.closest(
+                "#pauseButton, #pauseMenu"
+            )
+        ) {
+
+            return;
+        }
+
+        event.preventDefault();
+
+    },
+    {
+        passive: false
+    }
+);
+
+
+/* =========================================================
+   KEYBOARD
+   ========================================================= */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "ArrowUp" ||
+            event.key.toLowerCase() === "w"
+        ) {
+
+            changeDirection(
+                0,
+                -1
+            );
+        }
+
+
+        if (
+            event.key === "ArrowDown" ||
+            event.key.toLowerCase() === "s"
+        ) {
+
+            changeDirection(
+                0,
+                1
+            );
+        }
+
+
+        if (
+            event.key === "ArrowLeft" ||
+            event.key.toLowerCase() === "a"
+        ) {
+
+            changeDirection(
+                -1,
+                0
+            );
+        }
+
+
+        if (
+            event.key === "ArrowRight" ||
+            event.key.toLowerCase() === "d"
+        ) {
+
+            changeDirection(
+                1,
+                0
+            );
+        }
+
+
+        if (
+            event.key === " " ||
+            event.key.toLowerCase() === "p"
+        ) {
+
+            event.preventDefault();
+
+            togglePause();
+        }
+
+
+        if (
+            event.key.toLowerCase() === "l"
+        ) {
+
+            toggleLaser();
+        }
+    }
+);
+
+
+/* =========================================================
+   GAME LOOP
+   ========================================================= */
+
+function update(dt) {
+
+    if (
+        !gameRunning ||
+        gameOver
+    ) {
+
+        return;
+    }
+
+
+    survivalTime += dt;
+
+
+    moveCycle(
+        player,
+        dt
+    );
+
+    moveCycle(
+        enemy,
+        dt
+    );
+
+
+    updatePlayerTrail();
+
+    updateEnemyTrail(dt);
+
+
+    enemyAI();
+
+
+    checkCollisions();
+
+
+    updateBackgroundMode();
+
+    updateHUD();
+}
+
+
+function gameLoop(now) {
+
+    const dt =
+        Math.min(
+            (now - lastTime) / 1000,
+            0.05
+        );
+
+
+    lastTime = now;
+
+
+    update(dt);
+
+    draw();
+
+
+    requestAnimationFrame(
+        gameLoop
+    );
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+resetGame();
+
+requestAnimationFrame(
+    gameLoop
+);
+
+</script>
+
+</body>
+</html>
