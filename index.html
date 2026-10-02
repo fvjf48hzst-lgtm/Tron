@@ -2,11 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<title>Neon Cycles</title>
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
+
+<title>TRON</title>
 
 <style>
+
+/* =========================================================
+   GLOBAL
+   ========================================================= */
 
 * {
     box-sizing: border-box;
@@ -41,13 +49,31 @@ body {
     touch-action: none;
     user-select: none;
 
-    transition:
-        background 0.5s ease;
-
-    /* CENTER THE GAME ON THE SCREEN */
     display: flex;
     justify-content: center;
     align-items: center;
+
+    /*
+        Keeps the game centered inside the usable
+        area on phones with notches / home indicators.
+    */
+    padding:
+        env(safe-area-inset-top)
+        env(safe-area-inset-right)
+        env(safe-area-inset-bottom)
+        env(safe-area-inset-left);
+
+    transition:
+        background 0.5s ease;
+}
+
+/* Modern iPhone viewport */
+@supports (height: 100dvh) {
+
+    html,
+    body {
+        height: 100dvh;
+    }
 }
 
 body.redMode {
@@ -60,7 +86,6 @@ body.redMode {
         );
 }
 
-
 /* =========================================================
    GAME WRAPPER
    ========================================================= */
@@ -69,17 +94,45 @@ body.redMode {
 
     position: relative;
 
-    width: min(94vw, 700px);
-
-    aspect-ratio: 1 / 1;
-
     /*
-        Prevent the arena from being too tall
-        for smaller phone screens.
+        The arena is always square and uses the smaller
+        available screen dimension.
+
+        Safe-area insets are subtracted so the arena
+        stays completely inside the usable phone screen.
     */
 
-    max-width: 94vw;
-    max-height: 94vh;
+    width:
+        min(
+            calc(
+                94vw
+                - env(safe-area-inset-left)
+                - env(safe-area-inset-right)
+            ),
+            calc(
+                94vh
+                - env(safe-area-inset-top)
+                - env(safe-area-inset-bottom)
+            ),
+            700px
+        );
+
+    height:
+        min(
+            calc(
+                94vw
+                - env(safe-area-inset-left)
+                - env(safe-area-inset-right)
+            ),
+            calc(
+                94vh
+                - env(safe-area-inset-top)
+                - env(safe-area-inset-bottom)
+            ),
+            700px
+        );
+
+    flex: 0 0 auto;
 
     display: flex;
 
@@ -87,6 +140,42 @@ body.redMode {
     align-items: center;
 }
 
+/* Dynamic viewport for modern mobile browsers */
+@supports (height: 100dvh) {
+
+    #gameWrapper {
+
+        width:
+            min(
+                calc(
+                    94vw
+                    - env(safe-area-inset-left)
+                    - env(safe-area-inset-right)
+                ),
+                calc(
+                    94dvh
+                    - env(safe-area-inset-top)
+                    - env(safe-area-inset-bottom)
+                ),
+                700px
+            );
+
+        height:
+            min(
+                calc(
+                    94vw
+                    - env(safe-area-inset-left)
+                    - env(safe-area-inset-right)
+                ),
+                calc(
+                    94dvh
+                    - env(safe-area-inset-top)
+                    - env(safe-area-inset-bottom)
+                ),
+                700px
+            );
+    }
+}
 
 /* =========================================================
    CANVAS
@@ -152,6 +241,167 @@ canvas.redMode {
         inset 0 0 30px rgba(255, 0, 0, 0.25);
 }
 
+/* =========================================================
+   START MENU
+   ========================================================= */
+
+#startMenu {
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 50;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    background:
+        rgba(0, 5, 15, 0.82);
+
+    backdrop-filter:
+        blur(5px);
+
+    -webkit-backdrop-filter:
+        blur(5px);
+
+    touch-action: manipulation;
+}
+
+#startBox {
+
+    width:
+        min(82%, 360px);
+
+    padding:
+        32px 26px;
+
+    border:
+        2px solid #00aaff;
+
+    border-radius:
+        16px;
+
+    background:
+        rgba(0, 10, 28, 0.96);
+
+    box-shadow:
+        0 0 35px #008cff,
+        inset 0 0 25px rgba(0, 140, 255, 0.18);
+
+    text-align: center;
+}
+
+/* TRON TITLE */
+
+#tronTitle {
+
+    margin:
+        0 0 8px;
+
+    color:
+        #00c8ff;
+
+    font-size:
+        clamp(42px, 12vw, 68px);
+
+    font-weight:
+        900;
+
+    letter-spacing:
+        8px;
+
+    text-indent:
+        8px;
+
+    text-shadow:
+        0 0 8px #00c8ff,
+        0 0 18px #008cff,
+        0 0 35px #0066ff;
+}
+
+#subtitle {
+
+    margin:
+        0 0 28px;
+
+    color:
+        #ffffff;
+
+    font-size:
+        12px;
+
+    letter-spacing:
+        4px;
+
+    opacity:
+        0.8;
+}
+
+/* =========================================================
+   MENU BUTTONS
+   ========================================================= */
+
+.menuButton {
+
+    width:
+        100%;
+
+    margin:
+        8px 0;
+
+    padding:
+        14px 12px;
+
+    border:
+        2px solid #008cff;
+
+    border-radius:
+        8px;
+
+    background:
+        #001329;
+
+    color:
+        #00c8ff;
+
+    font-size:
+        16px;
+
+    font-weight:
+        bold;
+
+    letter-spacing:
+        2px;
+
+    box-shadow:
+        0 0 8px rgba(0, 140, 255, 0.5);
+
+    touch-action:
+        manipulation;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.15s ease;
+}
+
+.menuButton:active {
+
+    background:
+        #00305c;
+
+    box-shadow:
+        0 0 18px #008cff;
+
+    transform:
+        scale(0.97);
+}
 
 /* =========================================================
    PAUSE BUTTON
@@ -192,7 +442,6 @@ canvas.redMode {
     touch-action: manipulation;
 }
 
-
 /* =========================================================
    PAUSE MENU
    ========================================================= */
@@ -216,18 +465,25 @@ canvas.redMode {
     backdrop-filter:
         blur(4px);
 
+    -webkit-backdrop-filter:
+        blur(4px);
+
     touch-action: manipulation;
 }
 
-
 #pauseBox {
 
-    width: min(75%, 300px);
+    width:
+        min(75%, 300px);
 
-    padding: 28px;
+    padding:
+        28px;
 
-    border: 2px solid #00aaff;
-    border-radius: 14px;
+    border:
+        2px solid #00aaff;
+
+    border-radius:
+        14px;
 
     background:
         rgba(0, 12, 30, 0.95);
@@ -236,49 +492,175 @@ canvas.redMode {
         0 0 25px #008cff,
         inset 0 0 20px rgba(0, 140, 255, 0.15);
 
-    text-align: center;
+    text-align:
+        center;
 }
-
 
 #pauseBox h2 {
 
     margin:
         0 0 22px;
 
-    color: #00c8ff;
+    color:
+        #00c8ff;
 
     text-shadow:
         0 0 10px #008cff;
 
-    letter-spacing: 3px;
+    letter-spacing:
+        3px;
 }
 
+/* =========================================================
+   GAME OVER MENU
+   ========================================================= */
 
-.menuButton {
+#gameOverMenu {
 
-    width: 100%;
+    position: absolute;
 
-    margin: 8px 0;
+    inset: 0;
 
-    padding: 13px;
+    z-index: 40;
 
-    border: 2px solid #008cff;
-    border-radius: 8px;
+    display: none;
+
+    justify-content: center;
+    align-items: center;
 
     background:
-        #001329;
+        rgba(0, 0, 8, 0.82);
 
-    color: #00c8ff;
+    backdrop-filter:
+        blur(5px);
 
-    font-size: 16px;
-    font-weight: bold;
+    -webkit-backdrop-filter:
+        blur(5px);
 
-    box-shadow:
-        0 0 8px rgba(0, 140, 255, 0.5);
-
-    touch-action: manipulation;
+    touch-action:
+        manipulation;
 }
 
+#gameOverBox {
+
+    width:
+        min(82%, 340px);
+
+    padding:
+        30px 26px;
+
+    border:
+        2px solid #ff2222;
+
+    border-radius:
+        16px;
+
+    background:
+        rgba(20, 0, 5, 0.96);
+
+    box-shadow:
+        0 0 30px #ff2222,
+        inset 0 0 22px rgba(255, 0, 0, 0.15);
+
+    text-align:
+        center;
+}
+
+#gameOverTitle {
+
+    margin:
+        0 0 8px;
+
+    color:
+        #ff3333;
+
+    font-size:
+        30px;
+
+    font-weight:
+        bold;
+
+    letter-spacing:
+        4px;
+
+    text-shadow:
+        0 0 12px #ff0000;
+}
+
+#deathReason {
+
+    margin:
+        0 0 18px;
+
+    color:
+        #ffffff;
+
+    font-size:
+        15px;
+
+    line-height:
+        1.4;
+}
+
+#finalTimeLabel {
+
+    margin-bottom:
+        4px;
+
+    color:
+        #888888;
+
+    font-size:
+        11px;
+
+    letter-spacing:
+        3px;
+}
+
+#finalTime {
+
+    margin:
+        0 0 20px;
+
+    color:
+        #00c8ff;
+
+    font-size:
+        30px;
+
+    font-weight:
+        bold;
+
+    letter-spacing:
+        3px;
+
+    text-shadow:
+        0 0 12px #008cff;
+}
+
+#gameOverBox .menuButton {
+
+    border-color:
+        #ff3333;
+
+    color:
+        #ff5555;
+
+    box-shadow:
+        0 0 8px rgba(255, 30, 30, 0.45);
+
+    background:
+        #180005;
+}
+
+#gameOverBox .menuButton:active {
+
+    background:
+        #3a0008;
+
+    box-shadow:
+        0 0 18px #ff2222;
+}
 
 /* =========================================================
    HUD
@@ -299,29 +681,34 @@ canvas.redMode {
     text-align: center;
 }
 
-
 #stopwatch {
 
     display: inline-block;
 
-    padding: 5px 12px;
+    padding:
+        5px 12px;
 
-    border-radius: 8px;
+    border-radius:
+        8px;
 
     background:
         rgba(0, 5, 15, 0.72);
 
-    color: #ffffff;
+    color:
+        #ffffff;
 
-    font-size: 17px;
-    font-weight: bold;
+    font-size:
+        17px;
 
-    letter-spacing: 2px;
+    font-weight:
+        bold;
+
+    letter-spacing:
+        2px;
 
     text-shadow:
         0 0 8px #ffffff;
 }
-
 
 /* =========================================================
    STATUS
@@ -334,15 +721,18 @@ canvas.redMode {
     left: 12px;
     bottom: 10px;
 
-    color: #00c8ff;
+    color:
+        #00c8ff;
 
-    font-size: 12px;
-    font-weight: bold;
+    font-size:
+        12px;
+
+    font-weight:
+        bold;
 
     text-shadow:
         0 0 8px #00aaff;
 }
-
 
 #enemyStatus {
 
@@ -351,15 +741,18 @@ canvas.redMode {
     right: 12px;
     bottom: 10px;
 
-    color: #ff3333;
+    color:
+        #ff3333;
 
-    font-size: 12px;
-    font-weight: bold;
+    font-size:
+        12px;
+
+    font-weight:
+        bold;
 
     text-shadow:
         0 0 8px #ff0000;
 }
-
 
 /* =========================================================
    GAME MESSAGE
@@ -381,25 +774,31 @@ canvas.redMode {
     pointer-events: none;
 }
 
-
 #messageText {
 
     padding:
         18px 25px;
 
-    border: 2px solid #00c8ff;
+    border:
+        2px solid #00c8ff;
 
-    border-radius: 12px;
+    border-radius:
+        12px;
 
     background:
         rgba(0, 5, 15, 0.9);
 
-    color: #ffffff;
+    color:
+        #ffffff;
 
-    font-size: 26px;
-    font-weight: bold;
+    font-size:
+        26px;
 
-    text-align: center;
+    font-weight:
+        bold;
+
+    text-align:
+        center;
 
     text-shadow:
         0 0 12px #00aaff;
@@ -411,12 +810,19 @@ canvas.redMode {
 </style>
 </head>
 
-
 <body>
 
 <div id="gameWrapper">
 
+    <!-- =====================================================
+         GAME ARENA
+         ===================================================== -->
+
     <canvas id="gameCanvas"></canvas>
+
+    <!-- =====================================================
+         HUD
+         ===================================================== -->
 
     <div id="hud">
 
@@ -426,21 +832,56 @@ canvas.redMode {
 
     </div>
 
+    <!-- =====================================================
+         PAUSE BUTTON
+         ===================================================== -->
 
     <div id="pauseButton">
         Ⅱ
     </div>
 
+    <!-- =====================================================
+         STATUS
+         ===================================================== -->
 
     <div id="laserStatus">
         LASER OFF
     </div>
 
-
     <div id="enemyStatus">
         RED TRAIL ON
     </div>
 
+    <!-- =====================================================
+         START MENU
+         ===================================================== -->
+
+    <div id="startMenu">
+
+        <div id="startBox">
+
+            <h1 id="tronTitle">
+                TRON
+            </h1>
+
+            <div id="subtitle">
+                NEON CYCLES
+            </div>
+
+            <button
+                class="menuButton"
+                id="startButton"
+            >
+                START GAME
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- =====================================================
+         PAUSE MENU
+         ===================================================== -->
 
     <div id="pauseMenu">
 
@@ -459,15 +900,67 @@ canvas.redMode {
 
             <button
                 class="menuButton"
-                id="restartButton"
+                id="pauseRestartButton"
             >
                 RESTART
+            </button>
+
+            <button
+                class="menuButton"
+                id="pauseMainMenuButton"
+            >
+                MAIN MENU
             </button>
 
         </div>
 
     </div>
 
+    <!-- =====================================================
+         GAME OVER MENU
+         ===================================================== -->
+
+    <div id="gameOverMenu">
+
+        <div id="gameOverBox">
+
+            <h2 id="gameOverTitle">
+                GAME OVER
+            </h2>
+
+            <p id="deathReason">
+                YOU CRASHED!
+            </p>
+
+            <div id="finalTimeLabel">
+                SURVIVAL TIME
+            </div>
+
+            <div id="finalTime">
+                00:00.00
+            </div>
+
+            <button
+                class="menuButton"
+                id="gameOverRestartButton"
+            >
+                RESTART
+            </button>
+
+            <button
+                class="menuButton"
+                id="gameOverMainMenuButton"
+            >
+                MAIN MENU
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- =====================================================
+         OLD GAME MESSAGE
+         ===================================================== -->
 
     <div id="gameMessage">
 
@@ -476,7 +969,6 @@ canvas.redMode {
     </div>
 
 </div>
-
 
 <script>
 
@@ -507,9 +999,49 @@ const resumeButton =
         "resumeButton"
     );
 
-const restartButton =
+const pauseRestartButton =
     document.getElementById(
-        "restartButton"
+        "pauseRestartButton"
+    );
+
+const pauseMainMenuButton =
+    document.getElementById(
+        "pauseMainMenuButton"
+    );
+
+const startMenu =
+    document.getElementById(
+        "startMenu"
+    );
+
+const startButton =
+    document.getElementById(
+        "startButton"
+    );
+
+const gameOverMenu =
+    document.getElementById(
+        "gameOverMenu"
+    );
+
+const gameOverRestartButton =
+    document.getElementById(
+        "gameOverRestartButton"
+    );
+
+const gameOverMainMenuButton =
+    document.getElementById(
+        "gameOverMainMenuButton"
+    );
+
+const finalTime =
+    document.getElementById(
+        "finalTime"
+    );
+
+const deathReason =
+    document.getElementById(
+        "deathReason"
     );
 
 const stopwatch =
@@ -526,17 +1058,6 @@ const enemyStatus =
     document.getElementById(
         "enemyStatus"
     );
-
-const gameMessage =
-    document.getElementById(
-        "gameMessage"
-    );
-
-const messageText =
-    document.getElementById(
-        "messageText"
-    );
-
 
 /* =========================================================
    GAME SETTINGS
@@ -556,7 +1077,6 @@ const ENEMY_LOOK_AHEAD = 5.0;
 
 const ENEMY_SIDE_CHECK = 1.1;
 
-
 /* =========================================================
    GAME STATE
    ========================================================= */
@@ -565,9 +1085,11 @@ let canvasSize = 0;
 
 let cellSize = 0;
 
-let gameRunning = true;
+let gameRunning = false;
 
 let gameOver = false;
+
+let gameStarted = false;
 
 let survivalTime = 0;
 
@@ -580,7 +1102,6 @@ let enemyTrailActive = true;
 let enemyTrail = [];
 
 let enemyTrailTimer = 0;
-
 
 /* =========================================================
    TOUCH STATE
@@ -595,7 +1116,6 @@ let pointerStartY = 0;
 let tapCount = 0;
 
 let tapTimer = null;
-
 
 /* =========================================================
    CYCLES
@@ -615,7 +1135,6 @@ const player = {
     speed: 7.5
 };
 
-
 const enemy = {
 
     x: 21,
@@ -630,13 +1149,11 @@ const enemy = {
     speed: 6.5
 };
 
-
 let lastTime =
     performance.now();
 
-
 /* =========================================================
-   CANVAS
+   CANVAS RESIZE
    ========================================================= */
 
 function resizeCanvas() {
@@ -644,42 +1161,89 @@ function resizeCanvas() {
     const rect =
         canvas.getBoundingClientRect();
 
+    const size =
+        Math.min(
+            rect.width,
+            rect.height
+        );
+
+    const dpr =
+        window.devicePixelRatio || 1;
+
     canvas.width =
-        rect.width *
-        devicePixelRatio;
+        Math.round(
+            size * dpr
+        );
 
     canvas.height =
-        rect.height *
-        devicePixelRatio;
+        Math.round(
+            size * dpr
+        );
 
     ctx.setTransform(
-        devicePixelRatio,
+        dpr,
         0,
         0,
-        devicePixelRatio,
+        dpr,
         0,
         0
     );
 
     canvasSize =
-        rect.width;
+        size;
 
     cellSize =
         canvasSize /
         GRID_SIZE;
 }
 
-
 window.addEventListener(
     "resize",
     resizeCanvas
 );
 
+window.addEventListener(
+    "orientationchange",
+    () => {
+
+        setTimeout(
+            resizeCanvas,
+            100
+        );
+
+    }
+);
+
+if (
+    window.visualViewport
+) {
+
+    window.visualViewport.addEventListener(
+        "resize",
+        resizeCanvas
+    );
+}
+
+if (
+    "ResizeObserver" in window
+) {
+
+    const resizeObserver =
+        new ResizeObserver(
+            resizeCanvas
+        );
+
+    resizeObserver.observe(
+        document.getElementById(
+            "gameWrapper"
+        )
+    );
+}
+
 resizeCanvas();
 
-
 /* =========================================================
-   RESET
+   RANDOM
    ========================================================= */
 
 function randomRange(
@@ -692,6 +1256,9 @@ function randomRange(
         min;
 }
 
+/* =========================================================
+   ENEMY TRAIL TIMER
+   ========================================================= */
 
 function setEnemyTrailTimer() {
 
@@ -702,6 +1269,9 @@ function setEnemyTrailTimer() {
         );
 }
 
+/* =========================================================
+   RESET GAME
+   ========================================================= */
 
 function resetGame() {
 
@@ -714,7 +1284,6 @@ function resetGame() {
         y: 0
     };
 
-
     enemy.x = 21;
 
     enemy.y = 12;
@@ -724,24 +1293,22 @@ function resetGame() {
         y: 0
     };
 
-
     playerTrail = [];
 
     laserActive = false;
 
-
     enemyTrailActive = true;
 
     enemyTrail = [
+
         {
             x: enemy.x,
             y: enemy.y
         }
+
     ];
 
-
     setEnemyTrailTimer();
-
 
     survivalTime = 0;
 
@@ -749,16 +1316,18 @@ function resetGame() {
 
     gameOver = false;
 
+    gameStarted = true;
 
-    gameMessage.style.display =
+    startMenu.style.display =
         "none";
 
     pauseMenu.style.display =
         "none";
 
+    gameOverMenu.style.display =
+        "none";
 
     tapCount = 0;
-
 
     if (tapTimer) {
 
@@ -769,16 +1338,75 @@ function resetGame() {
         tapTimer = null;
     }
 
-
     updateBackgroundMode();
 
     updateHUD();
-
 
     lastTime =
         performance.now();
 }
 
+/* =========================================================
+   MAIN MENU
+   ========================================================= */
+
+function showMainMenu() {
+
+    gameRunning = false;
+
+    gameOver = false;
+
+    gameStarted = false;
+
+    pauseMenu.style.display =
+        "none";
+
+    gameOverMenu.style.display =
+        "none";
+
+    startMenu.style.display =
+        "flex";
+
+    document.body.classList.remove(
+        "redMode"
+    );
+
+    canvas.classList.remove(
+        "redMode"
+    );
+
+    survivalTime = 0;
+
+    updateHUD();
+}
+
+/* =========================================================
+   START GAME
+   ========================================================= */
+
+function startGame() {
+
+    resetGame();
+
+    startMenu.style.display =
+        "none";
+
+    lastTime =
+        performance.now();
+}
+
+startButton.addEventListener(
+    "pointerdown",
+    event => {
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+        startGame();
+
+    }
+);
 
 /* =========================================================
    HUD
@@ -791,12 +1419,10 @@ function updateHUD() {
             survivalTime * 100
         );
 
-
     const minutes =
         Math.floor(
             totalHundredths / 6000
         );
-
 
     const seconds =
         Math.floor(
@@ -804,10 +1430,8 @@ function updateHUD() {
             100
         );
 
-
     const hundredths =
         totalHundredths % 100;
-
 
     stopwatch.textContent =
 
@@ -830,13 +1454,11 @@ function updateHUD() {
             "0"
         );
 
-
     laserStatus.textContent =
 
         laserActive
             ? "LASER ACTIVE"
             : "LASER OFF";
-
 
     enemyStatus.textContent =
 
@@ -844,7 +1466,6 @@ function updateHUD() {
             ? "RED TRAIL ON"
             : "RED TRAIL OFF";
 }
-
 
 /* =========================================================
    BACKGROUND
@@ -856,19 +1477,16 @@ function updateBackgroundMode() {
         survivalTime >= 30 &&
         survivalTime < 60;
 
-
     document.body.classList.toggle(
         "redMode",
         redMode
     );
-
 
     canvas.classList.toggle(
         "redMode",
         redMode
     );
 }
-
 
 /* =========================================================
    PLAYER MOVEMENT
@@ -887,7 +1505,6 @@ function changeDirection(
         return;
     }
 
-
     if (
         dx === -player.dir.x &&
         dy === -player.dir.y
@@ -896,13 +1513,11 @@ function changeDirection(
         return;
     }
 
-
     player.dir = {
         x: dx,
         y: dy
     };
 }
-
 
 function moveCycle(
     cycle,
@@ -914,13 +1529,11 @@ function moveCycle(
         cycle.speed *
         dt;
 
-
     cycle.y +=
         cycle.dir.y *
         cycle.speed *
         dt;
 }
-
 
 /* =========================================================
    TRAILS
@@ -933,12 +1546,10 @@ function updatePlayerTrail() {
         return;
     }
 
-
     const last =
         playerTrail[
             playerTrail.length - 1
         ];
-
 
     if (
         !last ||
@@ -958,13 +1569,11 @@ function updatePlayerTrail() {
     }
 }
 
-
 function updateEnemyTrail(
     dt
 ) {
 
     enemyTrailTimer -= dt;
-
 
     if (
         enemyTrailTimer <= 0
@@ -973,14 +1582,15 @@ function updateEnemyTrail(
         enemyTrailActive =
             !enemyTrailActive;
 
-
         if (enemyTrailActive) {
 
             enemyTrail = [
+
                 {
                     x: enemy.x,
                     y: enemy.y
                 }
+
             ];
 
         } else {
@@ -988,10 +1598,8 @@ function updateEnemyTrail(
             enemyTrail = [];
         }
 
-
         setEnemyTrailTimer();
     }
-
 
     if (enemyTrailActive) {
 
@@ -999,7 +1607,6 @@ function updateEnemyTrail(
             enemyTrail[
                 enemyTrail.length - 1
             ];
-
 
         if (
             !last ||
@@ -1019,7 +1626,6 @@ function updateEnemyTrail(
         }
     }
 }
-
 
 /* =========================================================
    COLLISION HELPERS
@@ -1042,7 +1648,6 @@ function checkWallCollision(
     );
 }
 
-
 function pointToSegmentDistance(
     px,
     py,
@@ -1064,11 +1669,9 @@ function pointToSegmentDistance(
     const apy =
         py - ay;
 
-
     const abLengthSquared =
         abx * abx +
         aby * aby;
-
 
     if (
         abLengthSquared === 0
@@ -1080,7 +1683,6 @@ function pointToSegmentDistance(
         );
     }
 
-
     let t =
 
         (
@@ -1088,7 +1690,6 @@ function pointToSegmentDistance(
             apy * aby
         ) /
         abLengthSquared;
-
 
     t =
         Math.max(
@@ -1099,20 +1700,17 @@ function pointToSegmentDistance(
             )
         );
 
-
     const closestX =
         ax + abx * t;
 
     const closestY =
         ay + aby * t;
 
-
     return Math.hypot(
         px - closestX,
         py - closestY
     );
 }
-
 
 function checkTrailCollision(
     cycle,
@@ -1127,13 +1725,11 @@ function checkTrailCollision(
         return false;
     }
 
-
     const end =
         Math.max(
             0,
             trail.length - 5
         );
-
 
     for (
         let i = 0;
@@ -1146,7 +1742,6 @@ function checkTrailCollision(
 
         const b =
             trail[i + 1];
-
 
         if (
             pointToSegmentDistance(
@@ -1163,10 +1758,8 @@ function checkTrailCollision(
         }
     }
 
-
     return false;
 }
-
 
 /* =========================================================
    COLLISIONS
@@ -1187,7 +1780,6 @@ function checkCollisions() {
         return true;
     }
 
-
     if (
         checkWallCollision(
             enemy
@@ -1200,7 +1792,6 @@ function checkCollisions() {
 
         return true;
     }
-
 
     if (
         laserActive &&
@@ -1221,7 +1812,6 @@ function checkCollisions() {
             return true;
         }
 
-
         if (
             checkTrailCollision(
                 enemy,
@@ -1236,7 +1826,6 @@ function checkCollisions() {
             return true;
         }
     }
-
 
     if (
         enemyTrailActive &&
@@ -1257,7 +1846,6 @@ function checkCollisions() {
             return true;
         }
 
-
         if (
             checkTrailCollision(
                 enemy,
@@ -1273,10 +1861,8 @@ function checkCollisions() {
         }
     }
 
-
     return false;
 }
-
 
 /* =========================================================
    SMART ENEMY AI
@@ -1297,7 +1883,6 @@ function isPositionDangerous(
         return true;
     }
 
-
     if (
         checkTrailCollision(
             { x, y },
@@ -1307,7 +1892,6 @@ function isPositionDangerous(
 
         return true;
     }
-
 
     if (
         checkTrailCollision(
@@ -1319,10 +1903,8 @@ function isPositionDangerous(
         return true;
     }
 
-
     return false;
 }
-
 
 function directionHasDanger(
     direction,
@@ -1330,7 +1912,6 @@ function directionHasDanger(
 ) {
 
     const steps = 10;
-
 
     for (
         let i = 1;
@@ -1342,18 +1923,15 @@ function directionHasDanger(
             distance *
             (i / steps);
 
-
         const x =
             enemy.x +
             direction.x *
             progress;
 
-
         const y =
             enemy.y +
             direction.y *
             progress;
-
 
         if (
             isPositionDangerous(
@@ -1366,10 +1944,8 @@ function directionHasDanger(
         }
     }
 
-
     return false;
 }
-
 
 function countOpenDirections(
     x,
@@ -1377,7 +1953,6 @@ function countOpenDirections(
 ) {
 
     let open = 0;
-
 
     const directions = [
 
@@ -1391,7 +1966,6 @@ function countOpenDirections(
 
     ];
 
-
     for (
         const d of directions
     ) {
@@ -1404,13 +1978,11 @@ function countOpenDirections(
             continue;
         }
 
-
         const testX =
             x + d.x * 1.5;
 
         const testY =
             y + d.y * 1.5;
-
 
         if (
             !isPositionDangerous(
@@ -1423,10 +1995,8 @@ function countOpenDirections(
         }
     }
 
-
     return open;
 }
-
 
 function enemyAI() {
 
@@ -1442,9 +2012,7 @@ function enemyAI() {
 
     ];
 
-
     const candidates = [];
-
 
     for (
         const direction of directions
@@ -1458,7 +2026,6 @@ function enemyAI() {
             continue;
         }
 
-
         if (
             directionHasDanger(
                 direction,
@@ -1469,19 +2036,15 @@ function enemyAI() {
             continue;
         }
 
-
         let sideDanger = false;
-
 
         const sideX =
             -direction.y *
             ENEMY_SIDE_CHECK;
 
-
         const sideY =
             direction.x *
             ENEMY_SIDE_CHECK;
-
 
         for (
             let distance = 1;
@@ -1494,12 +2057,10 @@ function enemyAI() {
                 direction.x *
                 distance;
 
-
             const forwardY =
                 enemy.y +
                 direction.y *
                 distance;
-
 
             if (
 
@@ -1523,9 +2084,7 @@ function enemyAI() {
             }
         }
 
-
         let score = 0;
-
 
         if (
             direction.x === enemy.dir.x &&
@@ -1534,7 +2093,6 @@ function enemyAI() {
 
             score += 8;
         }
-
 
         const openSpace =
             countOpenDirections(
@@ -1545,16 +2103,13 @@ function enemyAI() {
                 direction.y * 2
             );
 
-
         score +=
             openSpace * 5;
-
 
         if (sideDanger) {
 
             score -= 10;
         }
-
 
         for (
             let distance = 1;
@@ -1567,12 +2122,10 @@ function enemyAI() {
                 direction.x *
                 distance;
 
-
             const checkY =
                 enemy.y +
                 direction.y *
                 distance;
-
 
             if (
                 isPositionDangerous(
@@ -1585,16 +2138,13 @@ function enemyAI() {
             }
         }
 
-
         const futureX =
             enemy.x +
             direction.x * 5;
 
-
         const futureY =
             enemy.y +
             direction.y * 5;
-
 
         const distanceToPlayer =
 
@@ -1608,7 +2158,6 @@ function enemyAI() {
                 futureY - player.y
             );
 
-
         score +=
 
             Math.max(
@@ -1617,7 +2166,6 @@ function enemyAI() {
             )
 
             * 0.35;
-
 
         candidates.push({
 
@@ -1628,7 +2176,6 @@ function enemyAI() {
         });
     }
 
-
     if (
         candidates.length > 0
     ) {
@@ -1638,10 +2185,8 @@ function enemyAI() {
                 b.score - a.score
         );
 
-
         const bestScore =
             candidates[0].score;
-
 
         const goodChoices =
             candidates.filter(
@@ -1649,7 +2194,6 @@ function enemyAI() {
                     candidate.score >=
                     bestScore - 4
             );
-
 
         const choice =
             goodChoices[
@@ -1659,20 +2203,16 @@ function enemyAI() {
                 )
             ];
 
-
         enemy.dir =
             choice.direction;
 
-
         return;
     }
-
 
     let emergencyChoice = null;
 
     let emergencyScore =
         -Infinity;
-
 
     for (
         const direction of directions
@@ -1686,9 +2226,7 @@ function enemyAI() {
             continue;
         }
 
-
         let score = 0;
-
 
         for (
             let distance = 0.5;
@@ -1701,12 +2239,10 @@ function enemyAI() {
                 direction.x *
                 distance;
 
-
             const y =
                 enemy.y +
                 direction.y *
                 distance;
-
 
             if (
 
@@ -1741,7 +2277,6 @@ function enemyAI() {
             }
         }
 
-
         if (
             score >
             emergencyScore
@@ -1755,14 +2290,12 @@ function enemyAI() {
         }
     }
 
-
     if (emergencyChoice) {
 
         enemy.dir =
             emergencyChoice;
     }
 }
-
 
 /* =========================================================
    DRAWING
@@ -1771,7 +2304,6 @@ function enemyAI() {
 function drawGrid() {
 
     ctx.save();
-
 
     ctx.strokeStyle =
 
@@ -1787,9 +2319,7 @@ function drawGrid() {
 
         "rgba(0, 110, 255, 0.12)";
 
-
     ctx.lineWidth = 1;
-
 
     for (
         let i = 0;
@@ -1799,7 +2329,6 @@ function drawGrid() {
 
         const p =
             i * cellSize;
-
 
         ctx.beginPath();
 
@@ -1814,7 +2343,6 @@ function drawGrid() {
         );
 
         ctx.stroke();
-
 
         ctx.beginPath();
 
@@ -1831,10 +2359,8 @@ function drawGrid() {
         ctx.stroke();
     }
 
-
     ctx.restore();
 }
-
 
 function drawTrail(
     trail,
@@ -1849,16 +2375,13 @@ function drawTrail(
         return;
     }
 
-
     ctx.save();
-
 
     ctx.lineCap =
         "round";
 
     ctx.lineJoin =
         "round";
-
 
     ctx.shadowColor =
         color;
@@ -1869,16 +2392,13 @@ function drawTrail(
     ctx.strokeStyle =
         color;
 
-
     ctx.lineWidth =
         Math.max(
             3,
             cellSize * 0.25
         );
 
-
     ctx.beginPath();
-
 
     ctx.moveTo(
         trail[0].x *
@@ -1887,7 +2407,6 @@ function drawTrail(
         trail[0].y *
             cellSize
     );
-
 
     for (
         let i = 1;
@@ -1904,15 +2423,12 @@ function drawTrail(
         );
     }
 
-
     ctx.stroke();
-
 
     ctx.shadowBlur = 0;
 
     ctx.strokeStyle =
         "#ffffff";
-
 
     ctx.lineWidth =
         Math.max(
@@ -1920,9 +2436,7 @@ function drawTrail(
             cellSize * 0.07
         );
 
-
     ctx.beginPath();
-
 
     ctx.moveTo(
         trail[0].x *
@@ -1931,7 +2445,6 @@ function drawTrail(
         trail[0].y *
             cellSize
     );
-
 
     for (
         let i = 1;
@@ -1948,13 +2461,10 @@ function drawTrail(
         );
     }
 
-
     ctx.stroke();
-
 
     ctx.restore();
 }
-
 
 function drawCycle(
     cycle,
@@ -1966,11 +2476,9 @@ function drawCycle(
         cycle.x *
         cellSize;
 
-
     const y =
         cycle.y *
         cellSize;
-
 
     const angle =
         Math.atan2(
@@ -1978,32 +2486,25 @@ function drawCycle(
             cycle.dir.x
         );
 
-
     ctx.save();
-
 
     ctx.translate(
         x,
         y
     );
 
-
     ctx.rotate(
         angle
     );
 
-
     ctx.shadowColor =
         mainColor;
-
 
     ctx.shadowBlur =
         18;
 
-
     ctx.fillStyle =
         darkColor;
-
 
     ctx.fillRect(
 
@@ -2017,10 +2518,8 @@ function drawCycle(
 
     );
 
-
     ctx.fillStyle =
         mainColor;
-
 
     ctx.fillRect(
 
@@ -2034,7 +2533,6 @@ function drawCycle(
 
     );
 
-
     ctx.fillRect(
 
         cellSize * 0.32,
@@ -2047,10 +2545,8 @@ function drawCycle(
 
     );
 
-
     ctx.restore();
 }
-
 
 function draw() {
 
@@ -2063,9 +2559,7 @@ function draw() {
 
     );
 
-
     drawGrid();
-
 
     if (laserActive) {
 
@@ -2075,7 +2569,6 @@ function draw() {
         );
     }
 
-
     if (enemyTrailActive) {
 
         drawTrail(
@@ -2083,7 +2576,6 @@ function draw() {
             "#ff2222"
         );
     }
-
 
     drawCycle(
 
@@ -2095,7 +2587,6 @@ function draw() {
 
     );
 
-
     drawCycle(
 
         enemy,
@@ -2106,7 +2597,6 @@ function draw() {
 
     );
 }
-
 
 /* =========================================================
    LASER
@@ -2122,10 +2612,8 @@ function toggleLaser() {
         return;
     }
 
-
     laserActive =
         !laserActive;
-
 
     if (laserActive) {
 
@@ -2143,10 +2631,8 @@ function toggleLaser() {
         playerTrail = [];
     }
 
-
     updateHUD();
 }
-
 
 /* =========================================================
    GAME OVER
@@ -2161,20 +2647,19 @@ function endGame(
         return;
     }
 
-
     gameOver = true;
 
     gameRunning = false;
 
-
-    messageText.textContent =
+    deathReason.textContent =
         message;
 
+    finalTime.textContent =
+        stopwatch.textContent;
 
-    gameMessage.style.display =
+    gameOverMenu.style.display =
         "flex";
 }
-
 
 /* =========================================================
    PAUSE
@@ -2182,32 +2667,32 @@ function endGame(
 
 function togglePause() {
 
-    if (gameOver) {
+    if (
+        !gameStarted ||
+        gameOver
+    ) {
 
         return;
     }
 
-
-    gameRunning =
-        !gameRunning;
-
-
     if (gameRunning) {
+
+        gameRunning = false;
+
+        pauseMenu.style.display =
+            "flex";
+
+    } else {
+
+        gameRunning = true;
 
         pauseMenu.style.display =
             "none";
 
-
         lastTime =
             performance.now();
-
-    } else {
-
-        pauseMenu.style.display =
-            "flex";
     }
 }
-
 
 pauseButton.addEventListener(
     "pointerdown",
@@ -2219,7 +2704,6 @@ pauseButton.addEventListener(
 
     }
 );
-
 
 pauseButton.addEventListener(
     "pointerup",
@@ -2234,7 +2718,6 @@ pauseButton.addEventListener(
     }
 );
 
-
 resumeButton.addEventListener(
     "pointerdown",
     event => {
@@ -2243,15 +2726,15 @@ resumeButton.addEventListener(
 
         event.stopPropagation();
 
-
-        if (!gameOver) {
+        if (
+            gameStarted &&
+            !gameOver
+        ) {
 
             gameRunning = true;
 
-
             pauseMenu.style.display =
                 "none";
-
 
             lastTime =
                 performance.now();
@@ -2260,8 +2743,7 @@ resumeButton.addEventListener(
     }
 );
 
-
-restartButton.addEventListener(
+pauseRestartButton.addEventListener(
     "pointerdown",
     event => {
 
@@ -2274,6 +2756,48 @@ restartButton.addEventListener(
     }
 );
 
+pauseMainMenuButton.addEventListener(
+    "pointerdown",
+    event => {
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+        showMainMenu();
+
+    }
+);
+
+/* =========================================================
+   GAME OVER BUTTONS
+   ========================================================= */
+
+gameOverRestartButton.addEventListener(
+    "pointerdown",
+    event => {
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+        resetGame();
+
+    }
+);
+
+gameOverMainMenuButton.addEventListener(
+    "pointerdown",
+    event => {
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+        showMainMenu();
+
+    }
+);
 
 /* =========================================================
    TOUCH CONTROLS
@@ -2285,7 +2809,7 @@ document.addEventListener(
 
         if (
             event.target.closest(
-                "#pauseButton, #pauseMenu"
+                "#startMenu, #pauseButton, #pauseMenu, #gameOverMenu"
             )
         ) {
 
@@ -2294,13 +2818,21 @@ document.addEventListener(
             return;
         }
 
+        if (
+            !gameStarted ||
+            !gameRunning ||
+            gameOver
+        ) {
+
+            pointerDown = false;
+
+            return;
+        }
 
         pointerDown = true;
 
-
         pointerStartX =
             event.clientX;
-
 
         pointerStartY =
             event.clientY;
@@ -2311,14 +2843,13 @@ document.addEventListener(
     }
 );
 
-
 document.addEventListener(
     "pointerup",
     event => {
 
         if (
             event.target.closest(
-                "#pauseButton, #pauseMenu"
+                "#startMenu, #pauseButton, #pauseMenu, #gameOverMenu"
             )
         ) {
 
@@ -2327,25 +2858,20 @@ document.addEventListener(
             return;
         }
 
-
         if (!pointerDown) {
 
             return;
         }
 
-
         pointerDown = false;
-
 
         const dx =
             event.clientX -
             pointerStartX;
 
-
         const dy =
             event.clientY -
             pointerStartY;
-
 
         const distance =
             Math.hypot(
@@ -2353,8 +2879,9 @@ document.addEventListener(
                 dy
             );
 
-
-        /* SWIPE */
+        /* =================================================
+           SWIPE
+           ================================================= */
 
         if (
             distance >=
@@ -2362,7 +2889,6 @@ document.addEventListener(
         ) {
 
             tapCount = 0;
-
 
             if (tapTimer) {
 
@@ -2373,7 +2899,6 @@ document.addEventListener(
                 tapTimer = null;
             }
 
-
             if (
                 !gameRunning ||
                 gameOver
@@ -2381,7 +2906,6 @@ document.addEventListener(
 
                 return;
             }
-
 
             if (
                 Math.abs(dx) >
@@ -2421,12 +2945,12 @@ document.addEventListener(
                 }
             }
 
-
             return;
         }
 
-
-        /* TAP */
+        /* =================================================
+           TAP
+           ================================================= */
 
         if (
             !gameRunning ||
@@ -2436,9 +2960,7 @@ document.addEventListener(
             return;
         }
 
-
         tapCount++;
-
 
         if (
             tapCount === 1
@@ -2450,7 +2972,6 @@ document.addEventListener(
                     tapTimer
                 );
             }
-
 
             tapTimer =
                 setTimeout(
@@ -2465,8 +2986,9 @@ document.addEventListener(
                 );
         }
 
-
-        /* TRIPLE TAP */
+        /* =================================================
+           TRIPLE TAP = LASER
+           ================================================= */
 
         if (
             tapCount === 3
@@ -2481,9 +3003,7 @@ document.addEventListener(
                 tapTimer = null;
             }
 
-
             tapCount = 0;
-
 
             toggleLaser();
         }
@@ -2493,7 +3013,6 @@ document.addEventListener(
         passive: false
     }
 );
-
 
 /* =========================================================
    PREVENT PAGE SCROLLING
@@ -2505,13 +3024,12 @@ document.addEventListener(
 
         if (
             event.target.closest(
-                "#pauseButton, #pauseMenu"
+                "#startMenu, #pauseButton, #pauseMenu, #gameOverMenu"
             )
         ) {
 
             return;
         }
-
 
         event.preventDefault();
 
@@ -2521,7 +3039,6 @@ document.addEventListener(
     }
 );
 
-
 /* =========================================================
    KEYBOARD
    ========================================================= */
@@ -2530,9 +3047,22 @@ document.addEventListener(
     "keydown",
     event => {
 
+        const key =
+            event.key.toLowerCase();
+
+        if (
+            key === "enter" &&
+            !gameStarted
+        ) {
+
+            startGame();
+
+            return;
+        }
+
         if (
             event.key === "ArrowUp" ||
-            event.key.toLowerCase() === "w"
+            key === "w"
         ) {
 
             changeDirection(
@@ -2541,10 +3071,9 @@ document.addEventListener(
             );
         }
 
-
         if (
             event.key === "ArrowDown" ||
-            event.key.toLowerCase() === "s"
+            key === "s"
         ) {
 
             changeDirection(
@@ -2553,10 +3082,9 @@ document.addEventListener(
             );
         }
 
-
         if (
             event.key === "ArrowLeft" ||
-            event.key.toLowerCase() === "a"
+            key === "a"
         ) {
 
             changeDirection(
@@ -2565,10 +3093,9 @@ document.addEventListener(
             );
         }
 
-
         if (
             event.key === "ArrowRight" ||
-            event.key.toLowerCase() === "d"
+            key === "d"
         ) {
 
             changeDirection(
@@ -2577,10 +3104,9 @@ document.addEventListener(
             );
         }
 
-
         if (
             event.key === " " ||
-            event.key.toLowerCase() === "p"
+            key === "p"
         ) {
 
             event.preventDefault();
@@ -2588,9 +3114,8 @@ document.addEventListener(
             togglePause();
         }
 
-
         if (
-            event.key.toLowerCase() === "l"
+            key === "l"
         ) {
 
             toggleLaser();
@@ -2598,7 +3123,6 @@ document.addEventListener(
 
     }
 );
-
 
 /* =========================================================
    GAME LOOP
@@ -2616,42 +3140,32 @@ function update(
         return;
     }
 
-
     survivalTime += dt;
-
 
     moveCycle(
         player,
         dt
     );
 
-
     moveCycle(
         enemy,
         dt
     );
 
-
     updatePlayerTrail();
-
 
     updateEnemyTrail(
         dt
     );
 
-
     enemyAI();
-
 
     checkCollisions();
 
-
     updateBackgroundMode();
-
 
     updateHUD();
 }
-
 
 function gameLoop(
     now
@@ -2663,28 +3177,22 @@ function gameLoop(
             0.05
         );
 
-
     lastTime = now;
-
 
     update(dt);
 
-
     draw();
-
 
     requestAnimationFrame(
         gameLoop
     );
 }
 
-
 /* =========================================================
-   START
+   INITIAL STATE
    ========================================================= */
 
-resetGame();
-
+showMainMenu();
 
 requestAnimationFrame(
     gameLoop
