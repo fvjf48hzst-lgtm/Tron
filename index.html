@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+Coool, <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -53,6 +53,10 @@ body {
     justify-content: center;
     align-items: center;
 
+    /*
+        Keeps the game centered inside the usable
+        area on phones with notches / home indicators.
+    */
     padding:
         env(safe-area-inset-top)
         env(safe-area-inset-right)
@@ -64,7 +68,6 @@ body {
 }
 
 /* Modern iPhone viewport */
-
 @supports (height: 100dvh) {
 
     html,
@@ -74,7 +77,6 @@ body {
 }
 
 body.redMode {
-
     background:
         radial-gradient(
             circle at center,
@@ -91,6 +93,14 @@ body.redMode {
 #gameWrapper {
 
     position: relative;
+
+    /*
+        The arena is always square and uses the smaller
+        available screen dimension.
+
+        Safe-area insets are subtracted so the arena
+        stays completely inside the usable phone screen.
+    */
 
     width:
         min(
@@ -130,6 +140,7 @@ body.redMode {
     align-items: center;
 }
 
+/* Dynamic viewport for modern mobile browsers */
 @supports (height: 100dvh) {
 
     #gameWrapper {
@@ -282,6 +293,8 @@ canvas.redMode {
 
     text-align: center;
 }
+
+/* TRON TITLE */
 
 #tronTitle {
 
@@ -801,7 +814,15 @@ canvas.redMode {
 
 <div id="gameWrapper">
 
+    <!-- =====================================================
+         GAME ARENA
+         ===================================================== -->
+
     <canvas id="gameCanvas"></canvas>
+
+    <!-- =====================================================
+         HUD
+         ===================================================== -->
 
     <div id="hud">
 
@@ -811,9 +832,17 @@ canvas.redMode {
 
     </div>
 
+    <!-- =====================================================
+         PAUSE BUTTON
+         ===================================================== -->
+
     <div id="pauseButton">
         Ⅱ
     </div>
+
+    <!-- =====================================================
+         STATUS
+         ===================================================== -->
 
     <div id="laserStatus">
         LASER OFF
@@ -822,6 +851,10 @@ canvas.redMode {
     <div id="enemyStatus">
         RED TRAIL ON
     </div>
+
+    <!-- =====================================================
+         START MENU
+         ===================================================== -->
 
     <div id="startMenu">
 
@@ -845,6 +878,10 @@ canvas.redMode {
         </div>
 
     </div>
+
+    <!-- =====================================================
+         PAUSE MENU
+         ===================================================== -->
 
     <div id="pauseMenu">
 
@@ -878,6 +915,10 @@ canvas.redMode {
         </div>
 
     </div>
+
+    <!-- =====================================================
+         GAME OVER MENU
+         ===================================================== -->
 
     <div id="gameOverMenu">
 
@@ -916,6 +957,10 @@ canvas.redMode {
         </div>
 
     </div>
+
+    <!-- =====================================================
+         OLD GAME MESSAGE
+         ===================================================== -->
 
     <div id="gameMessage">
 
@@ -1028,49 +1073,9 @@ const ENEMY_TRAIL_MIN_TIME = 0.7;
 
 const ENEMY_TRAIL_MAX_TIME = 2.8;
 
-/*
-    ENEMY AI
+const ENEMY_LOOK_AHEAD = 5.0;
 
-    The enemy does NOT choose a new direction every frame.
-
-    It commits to a direction for a while, then considers
-    whether a deliberate turn is worthwhile.
-
-    This creates movement that feels intentional instead
-    of twitchy.
-*/
-
-const ENEMY_LOOK_AHEAD = 5.5;
-
-const ENEMY_SIDE_CHECK = 1.0;
-
-/* Minimum amount of time before the enemy considers
-   making a normal turn. */
-
-const ENEMY_MIN_DRIVE_TIME = 1.15;
-
-/* Maximum amount of time before the enemy becomes
-   willing to reconsider its route. */
-
-const ENEMY_MAX_DRIVE_TIME = 2.65;
-
-/* Chance to make a wandering turn when there is no
-   immediate danger. */
-
-const ENEMY_WANDER_CHANCE = 0.34;
-
-/* How strongly the enemy prefers continuing straight. */
-
-const ENEMY_STRAIGHT_BONUS = 9;
-
-/* How strongly the enemy values open space. */
-
-const ENEMY_OPEN_SPACE_WEIGHT = 7;
-
-/* How strongly the enemy dislikes turning toward
-   its previous route. */
-
-const ENEMY_LOOP_PENALTY = 18;
+const ENEMY_SIDE_CHECK = 1.1;
 
 /* =========================================================
    GAME STATE
@@ -1143,27 +1148,6 @@ const enemy = {
 
     speed: 6.5
 };
-
-/* =========================================================
-   ENEMY AI STATE
-   ========================================================= */
-
-let enemyDriveTime = 0;
-
-let enemyNextDecisionTime = 0;
-
-let enemyLastTurnDirection = {
-    x: 0,
-    y: 0
-};
-
-let enemyPreviousDirections = [];
-
-let enemyTurnCooldown = 0;
-
-/* =========================================================
-   TIME
-   ========================================================= */
 
 let lastTime =
     performance.now();
@@ -1286,35 +1270,6 @@ function setEnemyTrailTimer() {
 }
 
 /* =========================================================
-   ENEMY AI RESET
-   ========================================================= */
-
-function resetEnemyAI() {
-
-    enemyDriveTime = 0;
-
-    enemyNextDecisionTime =
-        randomRange(
-            ENEMY_MIN_DRIVE_TIME,
-            ENEMY_MAX_DRIVE_TIME
-        );
-
-    enemyTurnCooldown = 0;
-
-    enemyLastTurnDirection = {
-        x: 0,
-        y: 0
-    };
-
-    enemyPreviousDirections = [
-        {
-            x: enemy.dir.x,
-            y: enemy.dir.y
-        }
-    ];
-}
-
-/* =========================================================
    RESET GAME
    ========================================================= */
 
@@ -1337,8 +1292,6 @@ function resetGame() {
         x: -1,
         y: 0
     };
-
-    resetEnemyAI();
 
     playerTrail = [];
 
@@ -1912,16 +1865,8 @@ function checkCollisions() {
 }
 
 /* =========================================================
-   ENEMY AI
+   SMART ENEMY AI
    ========================================================= */
-
-/*
-    Basic danger test.
-
-    This intentionally looks farther ahead than the old AI.
-    The enemy therefore has time to make a calm decision
-    instead of discovering a wall at the last second.
-*/
 
 function isPositionDangerous(
     x,
@@ -1929,10 +1874,10 @@ function isPositionDangerous(
 ) {
 
     if (
-        x < 0.65 ||
-        x > GRID_SIZE - 0.65 ||
-        y < 0.65 ||
-        y > GRID_SIZE - 0.65
+        x < 0.8 ||
+        x > GRID_SIZE - 0.8 ||
+        y < 0.8 ||
+        y > GRID_SIZE - 0.8
     ) {
 
         return true;
@@ -1961,20 +1906,12 @@ function isPositionDangerous(
     return false;
 }
 
-/*
-    Tests a direction several times into the future.
-
-    The closer a dangerous point is, the worse the route.
-*/
-
-function getDirectionDanger(
+function directionHasDanger(
     direction,
     distance
 ) {
 
-    let danger = 0;
-
-    const steps = 14;
+    const steps = 10;
 
     for (
         let i = 1;
@@ -1997,47 +1934,25 @@ function getDirectionDanger(
             progress;
 
         if (
-            x < 0 ||
-            x >= GRID_SIZE ||
-            y < 0 ||
-            y >= GRID_SIZE
-        ) {
-
-            danger +=
-                (steps - i + 1) * 12;
-
-            continue;
-        }
-
-        if (
             isPositionDangerous(
                 x,
                 y
             )
         ) {
 
-            danger +=
-                (steps - i + 1) * 10;
+            return true;
         }
     }
 
-    return danger;
+    return false;
 }
 
-/*
-    Counts how much room exists around a location.
-
-    A route that has several exits is much better than
-    one that leads into a narrow corridor.
-*/
-
-function measureOpenSpace(
-    startX,
-    startY,
-    direction
+function countOpenDirections(
+    x,
+    y
 ) {
 
-    let score = 0;
+    let open = 0;
 
     const directions = [
 
@@ -2055,183 +1970,35 @@ function measureOpenSpace(
         const d of directions
     ) {
 
-        let clearDistance = 0;
-
-        for (
-            let distance = 1;
-            distance <= 5;
-            distance++
+        if (
+            d.x === -enemy.dir.x &&
+            d.y === -enemy.dir.y
         ) {
 
-            const x =
-                startX +
-                d.x *
-                distance;
-
-            const y =
-                startY +
-                d.y *
-                distance;
-
-            if (
-                x < 0.5 ||
-                x > GRID_SIZE - 0.5 ||
-                y < 0.5 ||
-                y > GRID_SIZE - 0.5
-            ) {
-
-                break;
-            }
-
-            if (
-                isPositionDangerous(
-                    x,
-                    y
-                )
-            ) {
-
-                break;
-            }
-
-            clearDistance++;
+            continue;
         }
 
-        score +=
-            clearDistance;
-    }
+        const testX =
+            x + d.x * 1.5;
 
-    /*
-        Extra value for the actual direction being
-        considered. This makes the AI care about how much
-        runway exists ahead of it.
-    */
-
-    for (
-        let distance = 1;
-        distance <= 7;
-        distance++
-    ) {
-
-        const x =
-            startX +
-            direction.x *
-            distance;
-
-        const y =
-            startY +
-            direction.y *
-            distance;
+        const testY =
+            y + d.y * 1.5;
 
         if (
-            x < 0.5 ||
-            x > GRID_SIZE - 0.5 ||
-            y < 0.5 ||
-            y > GRID_SIZE - 0.5
-        ) {
-
-            break;
-        }
-
-        if (
-            isPositionDangerous(
-                x,
-                y
+            !isPositionDangerous(
+                testX,
+                testY
             )
         ) {
 
-            break;
-        }
-
-        score += 1.5;
-    }
-
-    return score;
-}
-
-/*
-    Looks for whether a route would send the enemy back
-    toward an area it recently travelled through.
-
-    This is one of the main things preventing the old
-    "square" behavior.
-*/
-
-function calculateLoopPenalty(
-    direction
-) {
-
-    if (
-        enemyPreviousDirections.length === 0
-    ) {
-
-        return 0;
-    }
-
-    let penalty = 0;
-
-    const recentCount =
-        Math.min(
-            enemyPreviousDirections.length,
-            7
-        );
-
-    for (
-        let i = 0;
-        i < recentCount;
-        i++
-    ) {
-
-        const previous =
-            enemyPreviousDirections[
-                enemyPreviousDirections.length -
-                1 -
-                i
-            ];
-
-        /*
-            Penalize repeating a direction that was used
-            recently, but don't make the penalty so strong
-            that the enemy becomes unable to travel normally.
-        */
-
-        if (
-            previous.x === direction.x &&
-            previous.y === direction.y
-        ) {
-
-            penalty +=
-                ENEMY_LOOP_PENALTY *
-                (1 - i * 0.1);
+            open++;
         }
     }
 
-    return penalty;
+    return open;
 }
 
-/*
-    Determine whether a direction is immediately safe.
-*/
-
-function directionIsSafe(
-    direction
-) {
-
-    const danger =
-        getDirectionDanger(
-            direction,
-            ENEMY_LOOK_AHEAD
-        );
-
-    return danger < 18;
-}
-
-/*
-    Returns all legal directions.
-
-    Reverse direction is NEVER allowed.
-*/
-
-function getEnemyDirections() {
+function enemyAI() {
 
     const directions = [
 
@@ -2245,545 +2012,289 @@ function getEnemyDirections() {
 
     ];
 
-    return directions.filter(
-        direction => {
+    const candidates = [];
+
+    for (
+        const direction of directions
+    ) {
+
+        if (
+            direction.x === -enemy.dir.x &&
+            direction.y === -enemy.dir.y
+        ) {
+
+            continue;
+        }
+
+        if (
+            directionHasDanger(
+                direction,
+                ENEMY_LOOK_AHEAD
+            )
+        ) {
+
+            continue;
+        }
+
+        let sideDanger = false;
+
+        const sideX =
+            -direction.y *
+            ENEMY_SIDE_CHECK;
+
+        const sideY =
+            direction.x *
+            ENEMY_SIDE_CHECK;
+
+        for (
+            let distance = 1;
+            distance <= 4;
+            distance++
+        ) {
+
+            const forwardX =
+                enemy.x +
+                direction.x *
+                distance;
+
+            const forwardY =
+                enemy.y +
+                direction.y *
+                distance;
 
             if (
-                direction.x === -enemy.dir.x &&
-                direction.y === -enemy.dir.y
+
+                isPositionDangerous(
+                    forwardX + sideX,
+                    forwardY + sideY
+                )
+
+                ||
+
+                isPositionDangerous(
+                    forwardX - sideX,
+                    forwardY - sideY
+                )
+
             ) {
 
-                return false;
+                sideDanger = true;
+
+                break;
             }
-
-            return true;
         }
-    );
-}
 
-/*
-    Scores every possible direction.
+        let score = 0;
 
-    This is deliberately different from the old AI:
+        if (
+            direction.x === enemy.dir.x &&
+            direction.y === enemy.dir.y
+        ) {
 
-    1. Staying straight is normally preferred.
-    2. Turning is allowed when useful.
-    3. Wide areas are preferred.
-    4. Recent routes are discouraged.
-    5. Some controlled randomness is added.
-    6. Dangerous routes are heavily punished.
-*/
+            score += 8;
+        }
 
-function scoreEnemyDirection(
-    direction
-) {
-
-    let score = 0;
-
-    const sameDirection =
-        direction.x === enemy.dir.x &&
-        direction.y === enemy.dir.y;
-
-    const danger =
-        getDirectionDanger(
-            direction,
-            ENEMY_LOOK_AHEAD
-        );
-
-    score -=
-        danger * 4;
-
-    const openSpace =
-        measureOpenSpace(
-            enemy.x +
-            direction.x * 1.5,
-
-            enemy.y +
-            direction.y * 1.5,
-
-            direction
-        );
-
-    score +=
-        openSpace *
-        ENEMY_OPEN_SPACE_WEIGHT;
-
-    if (sameDirection) {
-
-        score +=
-            ENEMY_STRAIGHT_BONUS;
-    }
-
-    /*
-        A turn is not automatically bad.
-
-        If a turn opens a lot more space than continuing,
-        the enemy can choose it.
-    */
-
-    if (!sameDirection) {
-
-        const straightOpen =
-            measureOpenSpace(
+        const openSpace =
+            countOpenDirections(
                 enemy.x +
-                enemy.dir.x * 1.5,
+                direction.x * 2,
 
                 enemy.y +
-                enemy.dir.y * 1.5,
-
-                enemy.dir
+                direction.y * 2
             );
 
-        if (
-            openSpace >
-            straightOpen + 3
-        ) {
+        score +=
+            openSpace * 5;
 
-            score +=
-                12;
+        if (sideDanger) {
+
+            score -= 10;
         }
-    }
 
-    score -=
-        calculateLoopPenalty(
-            direction
-        );
-
-    /*
-        Small randomness.
-
-        This is intentionally modest. It prevents identical
-        routes without turning the enemy into a random
-        direction generator.
-    */
-
-    score +=
-        randomRange(
-            -3.5,
-            3.5
-        );
-
-    /*
-        Very slight attraction toward the player.
-
-        The enemy isn't constantly chasing the player.
-        It simply becomes a little more interested in
-        nearby routes.
-    */
-
-    const futureX =
-        enemy.x +
-        direction.x * 5;
-
-    const futureY =
-        enemy.y +
-        direction.y * 5;
-
-    const playerDistance =
-
-        Math.abs(
-            futureX -
-            player.x
-        )
-
-        +
-
-        Math.abs(
-            futureY -
-            player.y
-        );
-
-    score +=
-        Math.max(
-            0,
-            10 -
-            playerDistance
-        ) *
-        0.22;
-
-    return score;
-}
-
-/*
-    Records the direction history.
-
-    Only a short history is needed. We don't want the enemy
-    to remember the entire match.
-*/
-
-function rememberEnemyDirection(
-    direction
-) {
-
-    enemyPreviousDirections.push({
-
-        x: direction.x,
-
-        y: direction.y
-
-    });
-
-    if (
-        enemyPreviousDirections.length > 10
-    ) {
-
-        enemyPreviousDirections.shift();
-    }
-}
-
-/*
-    Chooses a normal route.
-
-    The enemy can continue straight most of the time,
-    but when it has enough driving time behind it,
-    it can deliberately wander.
-*/
-
-function chooseEnemyRoute(
-    forceTurn = false
-) {
-
-    const candidates =
-        getEnemyDirections();
-
-    if (
-        candidates.length === 0
-    ) {
-
-        return;
-    }
-
-    const scored =
-        candidates.map(
-            direction => ({
-
-                direction,
-
-                score:
-                    scoreEnemyDirection(
-                        direction
-                    ),
-
-                safe:
-                    directionIsSafe(
-                        direction
-                    )
-
-            })
-        );
-
-    /*
-        First try to find genuinely safe routes.
-    */
-
-    let safeChoices =
-        scored.filter(
-            candidate =>
-                candidate.safe
-        );
-
-    /*
-        If multiple safe routes exist, normally continue
-        straight unless another route is significantly
-        better or the wandering decision says it's time.
-    */
-
-    if (
-        safeChoices.length > 0
-    ) {
-
-        safeChoices.sort(
-            (a, b) =>
-                b.score -
-                a.score
-        );
-
-        const straightChoice =
-            safeChoices.find(
-                candidate =>
-                    candidate.direction.x === enemy.dir.x &&
-                    candidate.direction.y === enemy.dir.y
-            );
-
-        const bestChoice =
-            safeChoices[0];
-
-        if (
-            !forceTurn &&
-            straightChoice
+        for (
+            let distance = 1;
+            distance <= 4;
+            distance++
         ) {
 
-            /*
-                Straight wins unless the best alternative
-                is clearly superior.
-            */
+            const checkX =
+                enemy.x +
+                direction.x *
+                distance;
+
+            const checkY =
+                enemy.y +
+                direction.y *
+                distance;
 
             if (
-                bestChoice ===
-                straightChoice ||
-                bestChoice.score <
-                straightChoice.score + 13
+                isPositionDangerous(
+                    checkX,
+                    checkY
+                )
             ) {
 
-                return;
+                score -= 100;
             }
         }
 
-        /*
-            Pick from the best few choices instead of always
-            taking the exact highest score.
+        const futureX =
+            enemy.x +
+            direction.x * 5;
 
-            This creates controlled unpredictability.
-        */
+        const futureY =
+            enemy.y +
+            direction.y * 5;
 
-        const topScore =
-            safeChoices[0].score;
+        const distanceToPlayer =
+
+            Math.abs(
+                futureX - player.x
+            )
+
+            +
+
+            Math.abs(
+                futureY - player.y
+            );
+
+        score +=
+
+            Math.max(
+                0,
+                12 - distanceToPlayer
+            )
+
+            * 0.35;
+
+        candidates.push({
+
+            direction,
+
+            score
+
+        });
+    }
+
+    if (
+        candidates.length > 0
+    ) {
+
+        candidates.sort(
+            (a, b) =>
+                b.score - a.score
+        );
+
+        const bestScore =
+            candidates[0].score;
 
         const goodChoices =
-            safeChoices.filter(
+            candidates.filter(
                 candidate =>
                     candidate.score >=
-                    topScore - 7
+                    bestScore - 4
             );
 
-        /*
-            When a normal wander is requested, don't always
-            choose straight.
-        */
-
-        let choices =
-            goodChoices;
-
-        if (
-            forceTurn &&
-            goodChoices.length > 1
-        ) {
-
-            const turningChoices =
-                goodChoices.filter(
-                    candidate =>
-                        !(
-                            candidate.direction.x ===
-                            enemy.dir.x &&
-                            candidate.direction.y ===
-                            enemy.dir.y
-                        )
-                );
-
-            if (
-                turningChoices.length > 0
-            ) {
-
-                choices =
-                    turningChoices;
-            }
-        }
-
-        const chosen =
-            choices[
+        const choice =
+            goodChoices[
                 Math.floor(
                     Math.random() *
-                    choices.length
+                    goodChoices.length
                 )
             ];
 
-        /*
-            Don't actually turn unless the choice differs
-            from the current direction.
-        */
+        enemy.dir =
+            choice.direction;
+
+        return;
+    }
+
+    let emergencyChoice = null;
+
+    let emergencyScore =
+        -Infinity;
+
+    for (
+        const direction of directions
+    ) {
 
         if (
-            chosen.direction.x !== enemy.dir.x ||
-            chosen.direction.y !== enemy.dir.y
+            direction.x === -enemy.dir.x &&
+            direction.y === -enemy.dir.y
         ) {
 
-            enemy.dir = {
-
-                x: chosen.direction.x,
-
-                y: chosen.direction.y
-
-            };
-
-            enemyLastTurnDirection = {
-
-                x: enemy.dir.x,
-
-                y: enemy.dir.y
-
-            };
-
-            rememberEnemyDirection(
-                enemy.dir
-            );
-
-            enemyTurnCooldown =
-                randomRange(
-                    0.75,
-                    1.25
-                );
+            continue;
         }
 
-        return;
+        let score = 0;
+
+        for (
+            let distance = 0.5;
+            distance <= 3;
+            distance += 0.5
+        ) {
+
+            const x =
+                enemy.x +
+                direction.x *
+                distance;
+
+            const y =
+                enemy.y +
+                direction.y *
+                distance;
+
+            if (
+
+                x < 0.5 ||
+
+                x > GRID_SIZE - 0.5 ||
+
+                y < 0.5 ||
+
+                y > GRID_SIZE - 0.5
+
+            ) {
+
+                score -= 20;
+
+            }
+
+            else if (
+                isPositionDangerous(
+                    x,
+                    y
+                )
+            ) {
+
+                score -= 15;
+
+            }
+
+            else {
+
+                score += 3;
+            }
+        }
+
+        if (
+            score >
+            emergencyScore
+        ) {
+
+            emergencyScore =
+                score;
+
+            emergencyChoice =
+                direction;
+        }
     }
 
-    /*
-        No safe routes.
+    if (emergencyChoice) {
 
-        This is the emergency section.
-
-        Instead of rapidly changing directions, pick the
-        least dangerous legal route and commit to it.
-    */
-
-    scored.sort(
-        (a, b) =>
-            b.score -
-            a.score
-    );
-
-    const emergency =
-        scored[0];
-
-    if (emergency) {
-
-        enemy.dir = {
-
-            x: emergency.direction.x,
-
-            y: emergency.direction.y
-
-        };
-
-        enemyLastTurnDirection = {
-
-            x: enemy.dir.x,
-
-            y: enemy.dir.y
-
-        };
-
-        rememberEnemyDirection(
-            enemy.dir
-        );
-
-        enemyTurnCooldown =
-            0.45;
+        enemy.dir =
+            emergencyChoice;
     }
-}
-
-/*
-    Main stateful AI.
-
-    This is called continuously, but it does NOT make a
-    new decision continuously.
-
-    That distinction is what keeps the enemy from twitching.
-*/
-
-function enemyAI(
-    dt
-) {
-
-    enemyDriveTime += dt;
-
-    if (
-        enemyTurnCooldown > 0
-    ) {
-
-        enemyTurnCooldown -= dt;
-    }
-
-    /*
-        Always check for immediate danger.
-
-        If the current route is genuinely becoming unsafe,
-        we are allowed to interrupt the normal drive period.
-    */
-
-    const currentDanger =
-        getDirectionDanger(
-            enemy.dir,
-            ENEMY_LOOK_AHEAD
-        );
-
-    const emergencyDanger =
-        currentDanger >= 45;
-
-    /*
-        If the route is safe, the enemy keeps driving.
-
-        This is the most important anti-twitch rule.
-    */
-
-    if (
-        !emergencyDanger &&
-        enemyDriveTime <
-        enemyNextDecisionTime
-    ) {
-
-        return;
-    }
-
-    /*
-        If the enemy has just turned, don't instantly turn
-        again unless there is an actual emergency.
-    */
-
-    if (
-        enemyTurnCooldown > 0 &&
-        !emergencyDanger
-    ) {
-
-        return;
-    }
-
-    /*
-        Decide whether this is a normal wandering moment.
-
-        It doesn't turn every time the timer expires.
-    */
-
-    const shouldWander =
-        Math.random() <
-        ENEMY_WANDER_CHANCE;
-
-    /*
-        If there is danger, force a route decision.
-
-        Otherwise, wandering is optional.
-    */
-
-    if (
-        emergencyDanger
-    ) {
-
-        chooseEnemyRoute(
-            true
-        );
-
-    } else if (
-        shouldWander
-    ) {
-
-        chooseEnemyRoute(
-            true
-        );
-    }
-
-    /*
-        Reset the drive timer whether or not a turn actually
-        happened. This prevents the AI from immediately
-        reconsidering its decision again.
-    */
-
-    enemyDriveTime = 0;
-
-    enemyNextDecisionTime =
-        randomRange(
-            ENEMY_MIN_DRIVE_TIME,
-            ENEMY_MAX_DRIVE_TIME
-        );
 }
 
 /* =========================================================
@@ -3647,14 +3158,7 @@ function update(
         dt
     );
 
-    /*
-        The AI receives dt, but only makes actual route
-        decisions when its internal decision timer says so.
-    */
-
-    enemyAI(
-        dt
-    );
+    enemyAI();
 
     checkCollisions();
 
