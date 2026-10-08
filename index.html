@@ -1280,6 +1280,8 @@ function resetGame() {
         y: 0
     };
 
+    enemy.speed = 6.5;
+
     playerTrail = [];
 
     laserActive = false;
@@ -1501,6 +1503,27 @@ function updateHUD() {
         laserActive
             ? "LASER ACTIVE"
             : "LASER OFF";
+}
+
+/* =========================================================
+   ENEMY SPEED
+
+   0:00 - 1:59.99  = RED / 6.5
+   2:00+            = YELLOW / ORANGE / 8.5
+   ========================================================= */
+
+function updateEnemySpeed() {
+
+    if (
+        survivalTime >= 120
+    ) {
+
+        enemy.speed = 8.5;
+
+    } else {
+
+        enemy.speed = 6.5;
+    }
 }
 
 /* =========================================================
@@ -3204,6 +3227,8 @@ function update(
     }
 
     survivalTime += dt;
+
+    updateEnemySpeed();
 
     moveCycle(
         player,
