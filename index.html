@@ -12,10 +12,6 @@
 
 <style>
 
-/* =========================================================
-   GLOBAL
-   ========================================================= */
-
 * {
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
@@ -53,10 +49,6 @@ body {
     justify-content: center;
     align-items: center;
 
-    /*
-        Keeps the game centered inside the usable
-        area on phones with notches / home indicators.
-    */
     padding:
         env(safe-area-inset-top)
         env(safe-area-inset-right)
@@ -67,7 +59,6 @@ body {
         background 0.5s ease;
 }
 
-/* Modern iPhone viewport */
 @supports (height: 100dvh) {
 
     html,
@@ -75,6 +66,10 @@ body {
         height: 100dvh;
     }
 }
+
+/* =========================================================
+   RED MODE — 1:00 TO 1:30
+   ========================================================= */
 
 body.redMode {
     background:
@@ -87,20 +82,26 @@ body.redMode {
 }
 
 /* =========================================================
+   YELLOW MODE — 2:00 TO 2:15
+   ========================================================= */
+
+body.orangeMode {
+    background:
+        radial-gradient(
+            circle at center,
+            #353500 0%,
+            #181800 55%,
+            #000000 100%
+        );
+}
+
+/* =========================================================
    GAME WRAPPER
    ========================================================= */
 
 #gameWrapper {
 
     position: relative;
-
-    /*
-        The arena is always square and uses the smaller
-        available screen dimension.
-
-        Safe-area insets are subtracted so the arena
-        stays completely inside the usable phone screen.
-    */
 
     width:
         min(
@@ -140,7 +141,6 @@ body.redMode {
     align-items: center;
 }
 
-/* Dynamic viewport for modern mobile browsers */
 @supports (height: 100dvh) {
 
     #gameWrapper {
@@ -216,6 +216,10 @@ canvas {
         box-shadow 0.5s ease;
 }
 
+/* =========================================================
+   RED CANVAS MODE
+   ========================================================= */
+
 canvas.redMode {
 
     background:
@@ -239,6 +243,35 @@ canvas.redMode {
     box-shadow:
         0 0 12px #ff2222,
         inset 0 0 30px rgba(255, 0, 0, 0.25);
+}
+
+/* =========================================================
+   YELLOW CANVAS MODE
+   ========================================================= */
+
+canvas.orangeMode {
+
+    background:
+        linear-gradient(
+            rgba(255, 220, 0, 0.06) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255, 220, 0, 0.06) 1px,
+            transparent 1px
+        ),
+        radial-gradient(
+            circle,
+            #353500 0%,
+            #0a0a00 70%
+        );
+
+    border-color: #ffff00;
+
+    box-shadow:
+        0 0 14px #ffff00,
+        inset 0 0 35px rgba(255, 255, 0, 0.3);
 }
 
 /* =========================================================
@@ -294,8 +327,6 @@ canvas.redMode {
     text-align: center;
 }
 
-/* TRON TITLE */
-
 #tronTitle {
 
     margin:
@@ -339,10 +370,6 @@ canvas.redMode {
     opacity:
         0.8;
 }
-
-/* =========================================================
-   MENU BUTTONS
-   ========================================================= */
 
 .menuButton {
 
@@ -403,10 +430,6 @@ canvas.redMode {
         scale(0.97);
 }
 
-/* =========================================================
-   PAUSE BUTTON
-   ========================================================= */
-
 #pauseButton {
 
     position: absolute;
@@ -441,10 +464,6 @@ canvas.redMode {
 
     touch-action: manipulation;
 }
-
-/* =========================================================
-   PAUSE MENU
-   ========================================================= */
 
 #pauseMenu {
 
@@ -510,10 +529,6 @@ canvas.redMode {
     letter-spacing:
         3px;
 }
-
-/* =========================================================
-   GAME OVER MENU
-   ========================================================= */
 
 #gameOverMenu {
 
@@ -662,10 +677,6 @@ canvas.redMode {
         0 0 18px #ff2222;
 }
 
-/* =========================================================
-   HUD
-   ========================================================= */
-
 #hud {
 
     position: absolute;
@@ -710,10 +721,6 @@ canvas.redMode {
         0 0 8px #ffffff;
 }
 
-/* =========================================================
-   STATUS
-   ========================================================= */
-
 #laserStatus {
 
     position: absolute;
@@ -753,10 +760,6 @@ canvas.redMode {
     text-shadow:
         0 0 8px #ff0000;
 }
-
-/* =========================================================
-   GAME MESSAGE
-   ========================================================= */
 
 #gameMessage {
 
@@ -814,15 +817,7 @@ canvas.redMode {
 
 <div id="gameWrapper">
 
-    <!-- =====================================================
-         GAME ARENA
-         ===================================================== -->
-
     <canvas id="gameCanvas"></canvas>
-
-    <!-- =====================================================
-         HUD
-         ===================================================== -->
 
     <div id="hud">
 
@@ -832,17 +827,9 @@ canvas.redMode {
 
     </div>
 
-    <!-- =====================================================
-         PAUSE BUTTON
-         ===================================================== -->
-
     <div id="pauseButton">
         Ⅱ
     </div>
-
-    <!-- =====================================================
-         STATUS
-         ===================================================== -->
 
     <div id="laserStatus">
         LASER OFF
@@ -851,10 +838,6 @@ canvas.redMode {
     <div id="enemyStatus">
         RED TRAIL ON
     </div>
-
-    <!-- =====================================================
-         START MENU
-         ===================================================== -->
 
     <div id="startMenu">
 
@@ -878,10 +861,6 @@ canvas.redMode {
         </div>
 
     </div>
-
-    <!-- =====================================================
-         PAUSE MENU
-         ===================================================== -->
 
     <div id="pauseMenu">
 
@@ -915,10 +894,6 @@ canvas.redMode {
         </div>
 
     </div>
-
-    <!-- =====================================================
-         GAME OVER MENU
-         ===================================================== -->
 
     <div id="gameOverMenu">
 
@@ -958,10 +933,6 @@ canvas.redMode {
 
     </div>
 
-    <!-- =====================================================
-         OLD GAME MESSAGE
-         ===================================================== -->
-
     <div id="gameMessage">
 
         <div id="messageText"></div>
@@ -970,11 +941,18 @@ canvas.redMode {
 
 </div>
 
-<script>
+<!-- =========================================================
+     BACKGROUND MUSIC
+     ========================================================= -->
 
-/* =========================================================
-   ELEMENTS
-   ========================================================= */
+<audio
+    id="backgroundMusic"
+    src="background.m4a"
+    loop
+    preload="auto"
+></audio>
+
+<script>
 
 const canvas =
     document.getElementById(
@@ -1060,8 +1038,45 @@ const enemyStatus =
     );
 
 /* =========================================================
-   GAME SETTINGS
+   BACKGROUND MUSIC
    ========================================================= */
+
+const backgroundMusic =
+    document.getElementById(
+        "backgroundMusic"
+    );
+
+function startBackgroundMusic() {
+
+    backgroundMusic.currentTime = 0;
+
+    backgroundMusic
+        .play()
+        .catch(
+            () => {}
+        );
+}
+
+function pauseBackgroundMusic() {
+
+    backgroundMusic.pause();
+}
+
+function resumeBackgroundMusic() {
+
+    backgroundMusic
+        .play()
+        .catch(
+            () => {}
+        );
+}
+
+function stopBackgroundMusic() {
+
+    backgroundMusic.pause();
+
+    backgroundMusic.currentTime = 0;
+}
 
 const GRID_SIZE = 25;
 
@@ -1076,10 +1091,6 @@ const ENEMY_TRAIL_MAX_TIME = 2.8;
 const ENEMY_LOOK_AHEAD = 5.0;
 
 const ENEMY_SIDE_CHECK = 1.1;
-
-/* =========================================================
-   GAME STATE
-   ========================================================= */
 
 let canvasSize = 0;
 
@@ -1103,10 +1114,6 @@ let enemyTrail = [];
 
 let enemyTrailTimer = 0;
 
-/* =========================================================
-   TOUCH STATE
-   ========================================================= */
-
 let pointerDown = false;
 
 let pointerStartX = 0;
@@ -1116,10 +1123,6 @@ let pointerStartY = 0;
 let tapCount = 0;
 
 let tapTimer = null;
-
-/* =========================================================
-   CYCLES
-   ========================================================= */
 
 const player = {
 
@@ -1151,10 +1154,6 @@ const enemy = {
 
 let lastTime =
     performance.now();
-
-/* =========================================================
-   CANVAS RESIZE
-   ========================================================= */
 
 function resizeCanvas() {
 
@@ -1242,10 +1241,6 @@ if (
 
 resizeCanvas();
 
-/* =========================================================
-   RANDOM
-   ========================================================= */
-
 function randomRange(
     min,
     max
@@ -1256,10 +1251,6 @@ function randomRange(
         min;
 }
 
-/* =========================================================
-   ENEMY TRAIL TIMER
-   ========================================================= */
-
 function setEnemyTrailTimer() {
 
     enemyTrailTimer =
@@ -1268,10 +1259,6 @@ function setEnemyTrailTimer() {
             ENEMY_TRAIL_MAX_TIME
         );
 }
-
-/* =========================================================
-   RESET GAME
-   ========================================================= */
 
 function resetGame() {
 
@@ -1344,11 +1331,9 @@ function resetGame() {
 
     lastTime =
         performance.now();
-}
 
-/* =========================================================
-   MAIN MENU
-   ========================================================= */
+    startBackgroundMusic();
+}
 
 function showMainMenu() {
 
@@ -1371,18 +1356,24 @@ function showMainMenu() {
         "redMode"
     );
 
+    document.body.classList.remove(
+        "orangeMode"
+    );
+
     canvas.classList.remove(
         "redMode"
     );
 
+    canvas.classList.remove(
+        "orangeMode"
+    );
+
     survivalTime = 0;
+
+    stopBackgroundMusic();
 
     updateHUD();
 }
-
-/* =========================================================
-   START GAME
-   ========================================================= */
 
 function startGame() {
 
@@ -1407,10 +1398,6 @@ startButton.addEventListener(
 
     }
 );
-
-/* =========================================================
-   HUD
-   ========================================================= */
 
 function updateHUD() {
 
@@ -1454,43 +1441,108 @@ function updateHUD() {
             "0"
         );
 
+    /*
+        Enemy colors:
+        0:00 - 2:00       = RED
+        2:00 - 2:15       = YELLOW
+        2:15+             = ORANGE
+    */
+
+    if (
+        survivalTime >= 135
+    ) {
+
+        enemyStatus.textContent =
+
+            enemyTrailActive
+                ? "ORANGE TRAIL ON"
+                : "ORANGE TRAIL OFF";
+
+        enemyStatus.style.color =
+            "#ff7200";
+
+        enemyStatus.style.textShadow =
+            "0 0 8px #ff7200";
+
+    } else if (
+        survivalTime >= 120 &&
+        survivalTime < 135
+    ) {
+
+        enemyStatus.textContent =
+
+            enemyTrailActive
+                ? "YELLOW TRAIL ON"
+                : "YELLOW TRAIL OFF";
+
+        enemyStatus.style.color =
+            "#ffff00";
+
+        enemyStatus.style.textShadow =
+            "0 0 8px #ffff00";
+
+    } else {
+
+        enemyStatus.textContent =
+
+            enemyTrailActive
+                ? "RED TRAIL ON"
+                : "RED TRAIL OFF";
+
+        enemyStatus.style.color =
+            "#ff3333";
+
+        enemyStatus.style.textShadow =
+            "0 0 8px #ff0000";
+    }
+
     laserStatus.textContent =
 
         laserActive
             ? "LASER ACTIVE"
             : "LASER OFF";
-
-    enemyStatus.textContent =
-
-        enemyTrailActive
-            ? "RED TRAIL ON"
-            : "RED TRAIL OFF";
 }
 
 /* =========================================================
-   BACKGROUND
+   BACKGROUND / COLOR MODE
+
+   0:00 - 0:59.99  = BLUE
+   1:00 - 1:29.99  = RED
+   1:30 - 1:59.99  = BLUE
+   2:00 - 2:14.99  = YELLOW
+   2:15+            = BLUE
    ========================================================= */
 
 function updateBackgroundMode() {
 
     const redMode =
-        survivalTime >= 30 &&
-        survivalTime < 60;
+        survivalTime >= 60 &&
+        survivalTime < 90;
+
+    const orangeMode =
+        survivalTime >= 120 &&
+        survivalTime < 135;
 
     document.body.classList.toggle(
         "redMode",
         redMode
     );
 
+    document.body.classList.toggle(
+        "orangeMode",
+        orangeMode
+    );
+
     canvas.classList.toggle(
         "redMode",
         redMode
     );
-}
 
-/* =========================================================
-   PLAYER MOVEMENT
-   ========================================================= */
+    canvas.classList.toggle(
+        "orangeMode",
+        orangeMode
+    );
+}
 
 function changeDirection(
     dx,
@@ -1534,10 +1586,6 @@ function moveCycle(
         cycle.speed *
         dt;
 }
-
-/* =========================================================
-   TRAILS
-   ========================================================= */
 
 function updatePlayerTrail() {
 
@@ -1626,10 +1674,6 @@ function updateEnemyTrail(
         }
     }
 }
-
-/* =========================================================
-   COLLISION HELPERS
-   ========================================================= */
 
 function checkWallCollision(
     cycle
@@ -1761,10 +1805,6 @@ function checkTrailCollision(
     return false;
 }
 
-/* =========================================================
-   COLLISIONS
-   ========================================================= */
-
 function checkCollisions() {
 
     if (
@@ -1840,7 +1880,14 @@ function checkCollisions() {
         ) {
 
             endGame(
-                "YOU HIT THE RED TRAIL!"
+                survivalTime >= 135
+                    ? "YOU HIT THE ORANGE TRAIL!"
+                    : survivalTime >= 120
+                        ? "YOU HIT THE YELLOW TRAIL!"
+                        : survivalTime >= 60 &&
+                          survivalTime < 90
+                            ? "YOU HIT THE RED TRAIL!"
+                            : "YOU HIT THE RED TRAIL!"
             );
 
             return true;
@@ -1854,7 +1901,11 @@ function checkCollisions() {
         ) {
 
             endGame(
-                "RED CYCLE HIT ITS TRAIL!"
+                survivalTime >= 135
+                    ? "ORANGE CYCLE HIT ITS TRAIL!"
+                    : survivalTime >= 120
+                        ? "YELLOW CYCLE HIT ITS TRAIL!"
+                        : "RED CYCLE HIT ITS TRAIL!"
             );
 
             return true;
@@ -1863,10 +1914,6 @@ function checkCollisions() {
 
     return false;
 }
-
-/* =========================================================
-   SMART ENEMY AI
-   ========================================================= */
 
 function isPositionDangerous(
     x,
@@ -2301,23 +2348,73 @@ function enemyAI() {
    DRAWING
    ========================================================= */
 
+function getEnemyColor() {
+
+    if (
+        survivalTime >= 135
+    ) {
+
+        return "#ff7200";
+    }
+
+    if (
+        survivalTime >= 120 &&
+        survivalTime < 135
+    ) {
+
+        return "#ffff00";
+    }
+
+    return "#ff2222";
+}
+
+function getEnemyDarkColor() {
+
+    if (
+        survivalTime >= 135
+    ) {
+
+        return "#241000";
+    }
+
+    if (
+        survivalTime >= 120 &&
+        survivalTime < 135
+    ) {
+
+        return "#242400";
+    }
+
+    return "#200000";
+}
+
 function drawGrid() {
 
     ctx.save();
 
-    ctx.strokeStyle =
+    if (
+        document.body.classList.contains(
+            "orangeMode"
+        )
+    ) {
 
+        ctx.strokeStyle =
+            "rgba(255, 220, 0, 0.16)";
+
+    } else if (
         document.body.classList.contains(
             "redMode"
         )
+    ) {
 
-        ?
+        ctx.strokeStyle =
+            "rgba(255, 50, 30, 0.12)";
 
-        "rgba(255, 50, 30, 0.12)"
+    } else {
 
-        :
-
-        "rgba(0, 110, 255, 0.12)";
+        ctx.strokeStyle =
+            "rgba(0, 110, 255, 0.12)";
+    }
 
     ctx.lineWidth = 1;
 
@@ -2573,7 +2670,7 @@ function draw() {
 
         drawTrail(
             enemyTrail,
-            "#ff2222"
+            getEnemyColor()
         );
     }
 
@@ -2581,9 +2678,13 @@ function draw() {
 
         player,
 
-        "#00c8ff",
+        survivalTime >= 165
+            ? "#ffffff"
+            : "#00c8ff",
 
-        "#00141f"
+        survivalTime >= 165
+            ? "#151515"
+            : "#00141f"
 
     );
 
@@ -2591,16 +2692,12 @@ function draw() {
 
         enemy,
 
-        "#ff2222",
+        getEnemyColor(),
 
-        "#200000"
+        getEnemyDarkColor()
 
     );
 }
-
-/* =========================================================
-   LASER
-   ========================================================= */
 
 function toggleLaser() {
 
@@ -2634,10 +2731,6 @@ function toggleLaser() {
     updateHUD();
 }
 
-/* =========================================================
-   GAME OVER
-   ========================================================= */
-
 function endGame(
     message
 ) {
@@ -2661,10 +2754,6 @@ function endGame(
         "flex";
 }
 
-/* =========================================================
-   PAUSE
-   ========================================================= */
-
 function togglePause() {
 
     if (
@@ -2682,6 +2771,8 @@ function togglePause() {
         pauseMenu.style.display =
             "flex";
 
+        pauseBackgroundMusic();
+
     } else {
 
         gameRunning = true;
@@ -2691,6 +2782,8 @@ function togglePause() {
 
         lastTime =
             performance.now();
+
+        resumeBackgroundMusic();
     }
 }
 
@@ -2738,6 +2831,8 @@ resumeButton.addEventListener(
 
             lastTime =
                 performance.now();
+
+            resumeBackgroundMusic();
         }
 
     }
@@ -2769,10 +2864,6 @@ pauseMainMenuButton.addEventListener(
     }
 );
 
-/* =========================================================
-   GAME OVER BUTTONS
-   ========================================================= */
-
 gameOverRestartButton.addEventListener(
     "pointerdown",
     event => {
@@ -2798,10 +2889,6 @@ gameOverMainMenuButton.addEventListener(
 
     }
 );
-
-/* =========================================================
-   TOUCH CONTROLS
-   ========================================================= */
 
 document.addEventListener(
     "pointerdown",
@@ -2879,10 +2966,6 @@ document.addEventListener(
                 dy
             );
 
-        /* =================================================
-           SWIPE
-           ================================================= */
-
         if (
             distance >=
             SWIPE_DISTANCE
@@ -2948,10 +3031,6 @@ document.addEventListener(
             return;
         }
 
-        /* =================================================
-           TAP
-           ================================================= */
-
         if (
             !gameRunning ||
             gameOver
@@ -2986,10 +3065,6 @@ document.addEventListener(
                 );
         }
 
-        /* =================================================
-           TRIPLE TAP = LASER
-           ================================================= */
-
         if (
             tapCount === 3
         ) {
@@ -3014,10 +3089,6 @@ document.addEventListener(
     }
 );
 
-/* =========================================================
-   PREVENT PAGE SCROLLING
-   ========================================================= */
-
 document.addEventListener(
     "touchmove",
     event => {
@@ -3038,10 +3109,6 @@ document.addEventListener(
         passive: false
     }
 );
-
-/* =========================================================
-   KEYBOARD
-   ========================================================= */
 
 document.addEventListener(
     "keydown",
@@ -3124,10 +3191,6 @@ document.addEventListener(
     }
 );
 
-/* =========================================================
-   GAME LOOP
-   ========================================================= */
-
 function update(
     dt
 ) {
@@ -3187,10 +3250,6 @@ function gameLoop(
         gameLoop
     );
 }
-
-/* =========================================================
-   INITIAL STATE
-   ========================================================= */
 
 showMainMenu();
 
